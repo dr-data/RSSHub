@@ -149,6 +149,9 @@ const Index: FC<{ debugQuery: string | undefined }> = ({ debugQuery }) => {
                     <a target="_blank" href="https://github.com/DIYgod/RSSHub">
                         <button className="bg-zinc-200 hover:bg-zinc-300 py-2 px-4 rounded-full transition-colors">GitHub</button>
                     </a>
+                    <a href="/webapp">
+                        <button className="text-white bg-[#F5712C] hover:bg-[#DD4A15] py-2 px-4 rounded-full transition-colors">Feed Builder</button>
+                    </a>
                 </div>
                 {info.showDebug ? (
                     <details className="text-xs w-96 !mt-8 max-h-[400px] overflow-auto">
