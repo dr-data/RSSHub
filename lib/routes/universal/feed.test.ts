@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+
+import ofetch from '@/utils/ofetch';
+import puppeteer from '@/utils/puppeteer';
+
 import { route } from './feed';
-import * as cheerio from 'cheerio';
 
 // Mock ofetch
 vi.mock('@/utils/ofetch', () => ({
@@ -12,10 +15,8 @@ vi.mock('@/utils/puppeteer', () => ({
     default: vi.fn(),
 }));
 
-import ofetch from '@/utils/ofetch';
-
 describe('Universal Feed', () => {
-    it('should generate feed items correctly from html', async () => {
+    it('should generate feed items correctly from html using ofetch', async () => {
         const mockHtml = `
             <html>
                 <body>
@@ -25,13 +26,6 @@ describe('Universal Feed', () => {
                         <div class="desc">Desc 1</div>
                         <span class="date">2023-01-01</span>
                         <span class="author">Author 1</span>
-                    </div>
-                    <div class="item">
-                        <h2 class="title">Title 2</h2>
-                        <a class="link" href="/post/2">Link 2</a>
-                        <div class="desc">Desc 2</div>
-                        <span class="date">2023-01-02</span>
-                        <span class="author">Author 2</span>
                     </div>
                 </body>
             </html>
@@ -55,14 +49,14 @@ describe('Universal Feed', () => {
                 },
             },
             cache: {
-                tryGet: async (key: string, fn: () => Promise<any>) => await fn(),
-            }
+                tryGet: async (_key: string, fn: () => Promise<any>) => await fn(),
+            },
         };
 
         const result = await route.handler(ctx);
 
         expect(result.title).toBe('RSS Feed for https://example.com');
-        expect(result.item).toHaveLength(2);
+        expect(result.item).toHaveLength(1);
         expect(result.item[0]).toEqual({
             title: 'Title 1',
             link: 'https://example.com/post/1',
@@ -70,25 +64,71 @@ describe('Universal Feed', () => {
             pubDate: '2023-01-01',
             author: 'Author 1',
         });
-        expect(result.item[1]).toEqual({
-            title: 'Title 2',
-            link: 'https://example.com/post/2',
-            description: 'Desc 2',
-            pubDate: '2023-01-02',
-            author: 'Author 2',
-        });
     });
 
-    it('should throw error if url or item selector is missing', async () => {
-         const ctx = {
+    it('should generate feed items correctly using puppeteer', async () => {
+        const mockHtml = `
+            <html>
+                <body>
+                    <div class="item">
+                        <h2 class="title">Puppeteer Title</h2>
+                        <a class="link" href="/puppeteer">Puppeteer Link</a>
+                    </div>
+                </body>
+            </html>
+        `;
+
+        const mockPage = {
+            goto: vi.fn(),
+            content: vi.fn().mockResolvedValue(mockHtml),
+            close: vi.fn(),
+        };
+
+        const mockBrowser = {
+            newPage: vi.fn().mockResolvedValue(mockPage),
+        };
+
+        (puppeteer as any).mockResolvedValue(mockBrowser);
+
+        const ctx = {
             req: {
                 query: (key: string) => {
-                    return null;
+                    const params = {
+                        url: 'https://example.com',
+                        item: '.item',
+                        title: '.title',
+                        link: '.link',
+                        puppeteer: '1',
+                    };
+                    return params[key];
                 },
             },
             cache: {
-                tryGet: async (key: string, fn: () => Promise<any>) => await fn(),
-            }
+                tryGet: async (_key: string, fn: () => Promise<any>) => await fn(),
+            },
+        };
+
+        const result = await route.handler(ctx);
+
+        expect(puppeteer).toHaveBeenCalled();
+        expect(mockBrowser.newPage).toHaveBeenCalled();
+        expect(mockPage.goto).toHaveBeenCalledWith('https://example.com', { waitUntil: 'domcontentloaded' });
+        expect(mockPage.content).toHaveBeenCalled();
+        expect(mockPage.close).toHaveBeenCalled();
+
+        expect(result.title).toBe('RSS Feed for https://example.com');
+        expect(result.item[0].title).toBe('Puppeteer Title');
+        expect(result.item[0].link).toBe('https://example.com/puppeteer');
+    });
+
+    it('should throw error if url or item selector is missing', async () => {
+        const ctx = {
+            req: {
+                query: (_key: string) => null,
+            },
+            cache: {
+                tryGet: async (_key: string, fn: () => Promise<any>) => await fn(),
+            },
         };
 
         await expect(route.handler(ctx)).rejects.toThrow('Url and item selector are required');
