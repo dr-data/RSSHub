@@ -45,12 +45,7 @@ function extractText(html: string): string {
 
 /** Escapes a string for safe inclusion in XML attributes and text nodes. */
 function escXml(s: string): string {
-    return s
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
 /**
@@ -155,7 +150,7 @@ app.get('/', async (c: Context<{ Bindings: Bindings }>) => {
     const itemsKey = `watch:items:${urlHash}`;
 
     // Load stored change history
-    const storedItems: WatchItem[] = kv ? ((JSON.parse((await kv.get(itemsKey)) ?? '[]')) as WatchItem[]) : [];
+    const storedItems: WatchItem[] = kv ? (JSON.parse((await kv.get(itemsKey)) ?? '[]') as WatchItem[]) : [];
 
     // Fetch the target page — direct fetch or via Jina AI for JS-rendered sites
     let fetchedText = '';
@@ -189,9 +184,7 @@ app.get('/', async (c: Context<{ Bindings: Bindings }>) => {
 
             storedItems.unshift({
                 title: isFirst ? `First snapshot: ${feedTitle}` : `Changed: ${feedTitle}`,
-                description: isFirst
-                    ? `<p>Monitoring started.</p><pre>${escXml(snippet)}</pre>`
-                    : `<p>Content changed at ${pubDate}</p><pre>${escXml(snippet)}</pre>`,
+                description: isFirst ? `<p>Monitoring started.</p><pre>${escXml(snippet)}</pre>` : `<p>Content changed at ${pubDate}</p><pre>${escXml(snippet)}</pre>`,
                 pubDate,
                 guid: `${rawUrl}:${newContentHash}`,
             });

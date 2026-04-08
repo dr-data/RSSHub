@@ -50,7 +50,7 @@ async function getIndex(): Promise<RouteIndexEntry[]> {
                 n: route.name || nsData.name || ns,
                 u: (nsData.url as string) || '',
                 e: example,
-                c: ((route.categories ?? nsData.categories ?? []) as string[]),
+                c: (route.categories ?? nsData.categories ?? []) as string[],
             });
         }
     }
