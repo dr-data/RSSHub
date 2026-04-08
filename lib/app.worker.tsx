@@ -16,6 +16,9 @@ import mLogger from '@/middleware/logger';
 import template from '@/middleware/template';
 import trace from '@/middleware/trace';
 import registry from '@/registry';
+import feedsAdmin from '@/routes/admin/feeds';
+import routesSearch from '@/routes/admin/search';
+import watchRoute from '@/routes/watch';
 import { setKVNamespace } from '@/utils/cache/index.worker';
 import { setBrowserBinding } from '@/utils/puppeteer';
 
@@ -23,6 +26,7 @@ import { setBrowserBinding } from '@/utils/puppeteer';
 type Bindings = {
     BROWSER?: any; // Browser Rendering API binding
     CACHE?: KVNamespace; // KV namespace for caching
+    ACCESS_KEY?: string; // Optional access key for admin routes
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -64,8 +68,9 @@ app.use(template);
 app.use(header);
 
 app.route('/', registry);
-
-// API routes not available in Worker environment
+app.route('/api/feeds', feedsAdmin);
+app.route('/api/routes/index', routesSearch);
+app.route('/watch', watchRoute);
 
 app.notFound(notFoundHandler);
 app.onError(errorHandler);
