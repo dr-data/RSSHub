@@ -13,7 +13,7 @@ import * as diagnostics_channel from 'node:diagnostics_channel';
 import * as dns from 'node:dns';
 // For events, we need the default export (EventEmitter class) for CJS compatibility
 // CJS require('events') returns EventEmitter class directly
-import events, * as eventsNamespace from 'node:events';
+import events from 'node:events';
 // Pre-import Node.js builtins that CJS modules might require
 import * as fs from 'node:fs';
 import * as fs_promises from 'node:fs/promises';
@@ -100,10 +100,10 @@ const child_process = {
     },
 };
 
-// Create a CJS-compatible events module
-// In CJS, require('events') returns EventEmitter class directly (the default export)
-// but also has named exports attached to it
-const eventsModule = Object.assign(events, eventsNamespace);
+// CJS require('events') should return the EventEmitter default export.
+// In newer Node runtimes some properties are read-only accessors, so avoid
+// Object.assign() onto the function object to prevent startup-time TypeError.
+const eventsModule = events;
 
 // Map of module names to their exports
 const builtinModules: Record<string, unknown> = {
