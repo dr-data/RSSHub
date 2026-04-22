@@ -1,10 +1,10 @@
 import js from '@eslint/js';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import { defineConfig } from 'eslint/config';
 // import { importX } from 'eslint-plugin-import-x';
 // import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import eslintPluginYml from 'eslint-plugin-yml';
-import { defineConfig } from 'eslint/config';
 import globals from 'globals';
 
 const SOURCE_FILES_GLOB = '**/*.?([cm])[jt]s?(x)';

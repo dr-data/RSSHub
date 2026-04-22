@@ -1,0 +1,160 @@
+
+> rsshub@1.0.0 dev /app
+> cross-env NODE_ENV=dev NODE_OPTIONS='--max-http-header-size=32768' tsx watch --inspect --clear-screen=false lib/index.ts
+
+Debugger listening on ws://127.0.0.1:9229/2229d5d9-0c9d-4be9-9edb-03eddc909709
+For help, see: https://nodejs.org/en/docs/inspector
+(node:13217) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.0.2:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+[32minfo[39m: <-- GET /dashboard.html
+[32minfo[39m: --> GET /dashboard.html [32m200[0m 15ms
+[32minfo[39m: <-- GET /api/feeds
+[31merror[39m: Error in /api/feeds: NotFoundError: NotFoundError
+    at notFoundHandler (/app/lib/errors/index.tsx:89:71)
+    at dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:34:23)
+    at file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:46
+    at file:///app/node_modules/.pnpm/@hono+node-server@1.19.13_hono@4.12.12/node_modules/@hono/node-server/dist/serve-static.mjs:99:14
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/cache.ts:64:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/parameter.ts:68:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)The route does not exist or has been deleted.
+[32minfo[39m: --> GET /api/feeds [33m404[0m 15ms
+[32minfo[39m: <-- GET /api/routes/index
+[31merror[39m: Error in /api/routes/index: NotFoundError: NotFoundError
+    at notFoundHandler (/app/lib/errors/index.tsx:89:71)
+    at dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:34:23)
+    at file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:46
+    at file:///app/node_modules/.pnpm/@hono+node-server@1.19.13_hono@4.12.12/node_modules/@hono/node-server/dist/serve-static.mjs:99:14
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/cache.ts:64:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/parameter.ts:68:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)The route does not exist or has been deleted.
+[32minfo[39m: --> GET /api/routes/index [33m404[0m 4ms
+[32minfo[39m: <-- POST /api/feeds
+[31merror[39m: Error in /api/feeds: NotFoundError: NotFoundError
+    at notFoundHandler (/app/lib/errors/index.tsx:89:71)
+    at dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:34:23)
+    at file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:46
+    at file:///app/node_modules/.pnpm/@hono+node-server@1.19.13_hono@4.12.12/node_modules/@hono/node-server/dist/serve-static.mjs:99:14
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/cache.ts:64:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/parameter.ts:68:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)The route does not exist or has been deleted.
+[32minfo[39m: --> POST /api/feeds [33m404[0m 5ms
+[32minfo[39m: <-- POST /api/feeds
+[31merror[39m: Error in /api/feeds: NotFoundError: NotFoundError
+    at notFoundHandler (/app/lib/errors/index.tsx:89:71)
+    at dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:34:23)
+    at file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:46
+    at file:///app/node_modules/.pnpm/@hono+node-server@1.19.13_hono@4.12.12/node_modules/@hono/node-server/dist/serve-static.mjs:99:14
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/cache.ts:64:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/parameter.ts:68:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/anti-hotlink.ts:103:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/header.ts:28:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/template.tsx:15:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/debug.ts:18:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/access-control.ts:22:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/sentry.ts:19:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/honeybadger.ts:20:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/trace.ts:18:9)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async middleware (/app/lib/middleware/logger.ts:37:5)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)
+    at async dispatch (file:///app/node_modules/.pnpm/hono@4.12.12/node_modules/hono/dist/compose.js:22:17)The route does not exist or has been deleted.
+[32minfo[39m: --> POST /api/feeds [33m404[0m 4ms
+11:20:00 AM [tsx] change in ./lib/routes/kuaidi100/utils.ts Rerunning...
+Starting inspector on 127.0.0.1:9229 failed: address already in use
+(node:59451) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.0.2:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+11:20:28 AM [tsx] change in ./lib/routes/watch/index.ts Restarting...
+Starting inspector on 127.0.0.1:9229 failed: address already in use
+11:20:33 AM [tsx] change in ./lib/routes/admin/feeds.ts Restarting...
+Starting inspector on 127.0.0.1:9229 failed: address already in use
+11:20:35 AM [tsx] change in ./lib/routes/toutiao/a-bogus.ts Restarting...
+Starting inspector on 127.0.0.1:9229 failed: address already in use
+11:20:36 AM [tsx] change in ./lib/routes/admin/search.ts Restarting...
+Starting inspector on 127.0.0.1:9229 failed: address already in use
+(node:59524) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.0.2:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200

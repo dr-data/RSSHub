@@ -1,6 +1,6 @@
 import type { KVNamespace } from '@cloudflare/workers-types';
-import { Hono } from 'hono';
 import type { Context } from 'hono';
+import { Hono } from 'hono';
 
 type Bindings = {
     BROWSER?: unknown;
@@ -21,7 +21,7 @@ const MAX_ITEMS = 20;
 async function sha256Short(value: string): Promise<string> {
     const encoded = new TextEncoder().encode(value);
     const buffer = await crypto.subtle.digest('SHA-256', encoded);
-    return Array.from(new Uint8Array(buffer))
+    return [...new Uint8Array(buffer)]
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('')
         .slice(0, 16);
@@ -33,19 +33,19 @@ async function sha256Short(value: string): Promise<string> {
  */
 function extractText(html: string): string {
     return html
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
-        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&#\d+;/g, ' ')
-        .replace(/&[a-z]+;/g, ' ')
-        .replace(/\s+/g, ' ')
+        .replaceAll(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+        .replaceAll(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
+        .replaceAll(/<[^>]+>/g, ' ')
+        .replaceAll(/&nbsp;/g, ' ')
+        .replaceAll(/&#\d+;/g, ' ')
+        .replaceAll(/&[a-z]+;/g, ' ')
+        .replaceAll(/\s+/g, ' ')
         .trim();
 }
 
 /** Escapes a string for safe inclusion in XML attributes and text nodes. */
 function escXml(s: string): string {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+    return s.replaceAll(/&/g, '&amp;').replaceAll(/</g, '&lt;').replaceAll(/>/g, '&gt;').replaceAll(/"/g, '&quot;').replaceAll(/'/g, '&apos;');
 }
 
 /**
@@ -110,7 +110,7 @@ async function fetchViaJina(url: string): Promise<string> {
             'User-Agent': 'RSSHub/1.0 (+https://rsshub.app)',
             Accept: 'text/plain',
         },
-        signal: AbortSignal.timeout(20_000),
+        signal: AbortSignal.timeout(20000),
     });
     if (!res.ok) {
         throw new Error(`Jina returned HTTP ${res.status}`);
@@ -161,7 +161,7 @@ app.get('/', async (c: Context<{ Bindings: Bindings }>) => {
         } else {
             const res = await fetch(rawUrl, {
                 headers: { 'User-Agent': 'RSSHub/1.0 (+https://rsshub.app)' },
-                signal: AbortSignal.timeout(10_000),
+                signal: AbortSignal.timeout(10000),
             });
             if (!res.ok) {
                 fetchError = `HTTP ${res.status}`;
@@ -169,8 +169,8 @@ app.get('/', async (c: Context<{ Bindings: Bindings }>) => {
                 fetchedText = extractText(await res.text());
             }
         }
-    } catch (err) {
-        fetchError = String(err);
+    } catch (error) {
+        fetchError = String(error);
     }
 
     if (fetchedText && kv) {
