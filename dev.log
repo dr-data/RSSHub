@@ -158,3 +158,13 @@ Starting inspector on 127.0.0.1:9229 failed: address already in use
 [32minfo[39m: 🔗 Local: 👉 http://localhost:1200
 [32minfo[39m: 🔗 Network: 👉 http://192.168.0.2:1200
 [32minfo[39m: 🔗 Network: 👉 http://[::]:1200
+11:32:13 AM [tsx] change in ./lib/routes/kuaidi100/utils.ts Restarting...
+Starting inspector on 127.0.0.1:9229 failed: address already in use
+11:32:22 AM [tsx] unlink in ./lib/routes/watch/index.ts Restarting...
+Starting inspector on 127.0.0.1:9229 failed: address already in use
+(node:136085) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[32minfo[39m: 🎉 RSSHub is running on port 1200! Cheers!
+[32minfo[39m: 🔗 Local: 👉 http://localhost:1200
+[32minfo[39m: 🔗 Network: 👉 http://192.168.0.2:1200
+[32minfo[39m: 🔗 Network: 👉 http://[::]:1200

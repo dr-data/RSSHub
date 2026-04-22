@@ -33,10 +33,10 @@ async function sha256Short(value: string): Promise<string> {
  */
 function extractText(html: string): string {
     return html
-        .replaceAll(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+        .replaceAll(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script\s*>/gi, ' ')
         .replaceAll(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
         .replaceAll(/<[^>]+>/g, ' ')
-        .replaceAll(/&nbsp;/g, ' ')
+        .replaceAll('&nbsp;', ' ')
         .replaceAll(/&#\d+;/g, ' ')
         .replaceAll(/&[a-z]+;/g, ' ')
         .replaceAll(/\s+/g, ' ')
@@ -45,7 +45,7 @@ function extractText(html: string): string {
 
 /** Escapes a string for safe inclusion in XML attributes and text nodes. */
 function escXml(s: string): string {
-    return s.replaceAll(/&/g, '&amp;').replaceAll(/</g, '&lt;').replaceAll(/>/g, '&gt;').replaceAll(/"/g, '&quot;').replaceAll(/'/g, '&apos;');
+    return s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
 }
 
 /**
@@ -163,10 +163,10 @@ app.get('/', async (c: Context<{ Bindings: Bindings }>) => {
                 headers: { 'User-Agent': 'RSSHub/1.0 (+https://rsshub.app)' },
                 signal: AbortSignal.timeout(10000),
             });
-            if (!res.ok) {
-                fetchError = `HTTP ${res.status}`;
-            } else {
+            if (res.ok) {
                 fetchedText = extractText(await res.text());
+            } else {
+                fetchError = `HTTP ${res.status}`;
             }
         }
     } catch (error) {

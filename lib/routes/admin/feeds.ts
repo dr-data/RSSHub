@@ -161,13 +161,13 @@ app.post('/:id/smart-fix', async (c) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${openAIApiKey}`
+                Authorization: `Bearer ${openAIApiKey}`,
             },
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo',
                 messages: [{ role: 'user', content: prompt }],
                 max_tokens: 200,
-            })
+            }),
         });
 
         if (!response.ok) {

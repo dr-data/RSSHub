@@ -31,30 +31,30 @@ async function getCookie() {
         const set_cookie = indexResponse.headers['set-cookie'];
         if (set_cookie) {
             for (const e of set_cookie) {
-                // eslint-disable-next-line unicorn/prefer-switch
                 switch (0) {
-                case e.indexOf('WWWID'): {
-                    wwwid = e.split(';')[0];
+                    case e.indexOf('WWWID'): {
+                        wwwid = e.split(';')[0];
 
-                break;
-                }
-                case e.indexOf('csrftoken'): {
-                    csrf = e.split(';')[0];
+                        break;
+                    }
+                    case e.indexOf('csrftoken'): {
+                        csrf = e.split(';')[0];
 
-                break;
-                }
-                case e.indexOf('globacsrftoken'): {
-                    globacsrftoken = e.split(';')[0];
+                        break;
+                    }
+                    case e.indexOf('globacsrftoken'): {
+                        globacsrftoken = e.split(';')[0];
 
-                break;
-                }
-                default: if (e.includes('dasddocTitle')) {
-                    dasddocTitl = e.split(';')[0];
-                } else if (e.includes('dasddocReferrer')) {
-                    dasddocReferrer = e.split(';')[0];
-                } else if (e.includes('dasddocHref')) {
-                    dasddocHref = e.split(';')[0];
-                }
+                        break;
+                    }
+                    default:
+                        if (e.includes('dasddocTitle')) {
+                            dasddocTitl = e.split(';')[0];
+                        } else if (e.includes('dasddocReferrer')) {
+                            dasddocReferrer = e.split(';')[0];
+                        } else if (e.includes('dasddocHref')) {
+                            dasddocHref = e.split(';')[0];
+                        }
                 }
             }
         }
