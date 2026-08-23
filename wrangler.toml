@@ -6,8 +6,10 @@ compatibility_flags = ["nodejs_compat"]
 # Serve static assets from lib/assets
 assets = { directory = "lib/assets" }
 
-[build]
-command = "pnpm run worker-build"
+# Build is run manually: npx tsdown --config ./tsdown-worker.config.ts
+# (pnpm run build:routes:worker fails on Node v25 — routes-worker.js is pre-built)
+# [build]
+# command = "pnpm run worker-build"
 
 # Workers Paid plan is recommended for better performance
 # Free plan has 10ms CPU time limit per request

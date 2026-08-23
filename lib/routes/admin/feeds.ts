@@ -1,6 +1,6 @@
 import type { KVNamespace } from '@cloudflare/workers-types';
-import { Hono } from 'hono';
 import type { Context } from 'hono';
+import { Hono } from 'hono';
 
 type Bindings = {
     BROWSER?: unknown;
@@ -78,6 +78,29 @@ app.post('/', async (c) => {
     feeds.push(feed);
     await kv.put(KV_KEY, JSON.stringify(feeds));
     return c.json(feed, 201);
+});
+
+/** PATCH /api/feeds/:id — update a feed's label or path */
+app.patch('/:id', async (c) => {
+    if (!isAuthorized(c)) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+    const kv = c.env?.CACHE;
+    if (!kv) {
+        return c.json({ error: 'KV not available' }, 503);
+    }
+    const id = c.req.param('id');
+    const body = await c.req.json<{ label?: string }>();
+    const feeds = await getFeeds(kv);
+    const idx = feeds.findIndex((f) => f.id === id);
+    if (idx === -1) {
+        return c.json({ error: 'Not found' }, 404);
+    }
+    if (body.label !== undefined) {
+        feeds[idx].label = String(body.label).trim() || feeds[idx].label;
+    }
+    await kv.put(KV_KEY, JSON.stringify(feeds));
+    return c.json(feeds[idx]);
 });
 
 /** DELETE /api/feeds/:id — remove a feed by id */

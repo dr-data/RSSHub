@@ -1,6 +1,6 @@
 import type { KVNamespace } from '@cloudflare/workers-types';
-import { Hono } from 'hono';
 import type { Context } from 'hono';
+import { Hono } from 'hono';
 
 // NOTE: namespaces is NOT imported at module level to avoid a circular dependency.
 // lib/registry.ts uses directoryImport() which scans lib/routes/** and would load

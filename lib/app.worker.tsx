@@ -27,6 +27,7 @@ type Bindings = {
     BROWSER?: any; // Browser Rendering API binding
     CACHE?: KVNamespace; // KV namespace for caching
     ACCESS_KEY?: string; // Optional access key for admin routes
+    JINA_API_KEY?: string; // Optional Jina AI API key for higher rate limits
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -71,6 +72,52 @@ app.route('/', registry);
 app.route('/api/feeds', feedsAdmin);
 app.route('/api/routes/index', routesSearch);
 app.route('/watch', watchRoute);
+
+/** GET /api/stats — dashboard system stats (KV counts, binding availability) */
+app.get('/api/stats', async (c) => {
+    const key = c.env?.ACCESS_KEY;
+    const provided = c.req.header('X-Access-Key') ?? c.req.query('key');
+    if (key && provided !== key) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+    const kv = c.env?.CACHE;
+    let totalFeeds = 0;
+    let watchFeeds = 0;
+    let snapshots = 0;
+    if (kv) {
+        const raw = await kv.get('admin:feeds');
+        if (raw) {
+            const feeds = JSON.parse(raw) as Array<{ path: string }>;
+            totalFeeds = feeds.length;
+            watchFeeds = feeds.filter((f) => f.path.startsWith('/watch')).length;
+        }
+        const listed = await kv.list({ prefix: 'watch:snap:' });
+        snapshots = listed.keys.length;
+    }
+    return c.json({
+        feeds: { total: totalFeeds, rss: totalFeeds - watchFeeds, watch: watchFeeds },
+        snapshots,
+        bindings: { kv: !!kv, browser: !!c.env?.BROWSER, jinaKey: !!c.env?.JINA_API_KEY },
+        ts: new Date().toISOString(),
+    });
+});
+
+/** DELETE /api/watch/snapshots — wipe all watch:snap:* and watch:items:* KV entries */
+app.delete('/api/watch/snapshots', async (c) => {
+    const key = c.env?.ACCESS_KEY;
+    const provided = c.req.header('X-Access-Key') ?? c.req.query('key');
+    if (key && provided !== key) {
+        return c.json({ error: 'Unauthorized' }, 401);
+    }
+    const kv = c.env?.CACHE;
+    if (!kv) {
+        return c.json({ error: 'KV not available' }, 503);
+    }
+    const [snaps, items] = await Promise.all([kv.list({ prefix: 'watch:snap:' }), kv.list({ prefix: 'watch:items:' })]);
+    const keys = [...snaps.keys, ...items.keys].map((k) => k.name);
+    await Promise.all(keys.map((k) => kv.delete(k)));
+    return c.json({ deleted: keys.length });
+});
 
 app.notFound(notFoundHandler);
 app.onError(errorHandler);

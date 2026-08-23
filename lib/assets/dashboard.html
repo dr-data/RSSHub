@@ -4,8 +4,56 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>RSSHub Dashboard</title>
-        <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
         <style>
+            /* ── Themes ── */
+            :root {
+                --bg: #fafafa;
+                --surface: #f0f0f0;
+                --border: #888;
+                --text: #111;
+                --muted: #666;
+                --accent: #c05a00;
+                --success: #1a6b2e;
+                --danger: #8b0000;
+                --mark: #ffe082;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #0d1117;
+                    --surface: #161b22;
+                    --border: #8b949e;
+                    --text: #c9d1d9;
+                    --muted: #8b949e;
+                    --accent: #f0883e;
+                    --success: #56d364;
+                    --danger: #f85149;
+                    --mark: #4d3800;
+                }
+            }
+            [data-theme='light'] {
+                --bg: #fafafa;
+                --surface: #f0f0f0;
+                --border: #888;
+                --text: #111;
+                --muted: #666;
+                --accent: #c05a00;
+                --success: #1a6b2e;
+                --danger: #8b0000;
+                --mark: #ffe082;
+            }
+            [data-theme='dark'] {
+                --bg: #0d1117;
+                --surface: #161b22;
+                --border: #8b949e;
+                --text: #c9d1d9;
+                --muted: #8b949e;
+                --accent: #f0883e;
+                --success: #56d364;
+                --danger: #f85149;
+                --mark: #4d3800;
+            }
+
+            /* ── Base ── */
             *,
             *::before,
             *::after {
@@ -13,277 +61,337 @@
                 margin: 0;
                 padding: 0;
             }
-            :root {
-                --bg: #0f1117;
-                --surface: #1a1d27;
-                --border: #2d3148;
-                --text: #e2e4f0;
-                --muted: #7a7f9a;
-                --accent: #f6821f;
-                --danger: #e05252;
-                --success: #4caf82;
-                --radius: 8px;
-                --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            html {
+                font-size: 14px;
             }
             body {
-                font-family: var(--font);
+                font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', 'Menlo', monospace;
                 background: var(--bg);
                 color: var(--text);
-                min-height: 100vh;
-                padding: 24px;
+                max-width: 1020px;
+                margin: 0 auto;
+                padding: 20px 16px;
+                line-height: 1.5;
             }
-            h1 {
-                font-size: 1.4rem;
-                font-weight: 600;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            h1 span {
-                color: var(--accent);
-            }
+
+            /* ── Header ── */
             header {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
-                margin-bottom: 32px;
+                align-items: baseline;
+                margin-bottom: 16px;
                 flex-wrap: wrap;
-                gap: 12px;
+                gap: 8px;
             }
-            .instance-url {
+            .site-title {
+                font-size: 1.2rem;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+            }
+            .site-title span {
+                color: var(--accent);
+            }
+            .hdr-meta {
+                color: var(--muted);
+                font-size: 0.82rem;
+            }
+
+            /* ── Section headings — markdown style ── */
+            .sec {
+                font-size: 1rem;
+                font-weight: 700;
+                margin: 24px 0 8px;
+                color: var(--text);
+            }
+            .sec-prefix {
+                color: var(--muted);
+                font-weight: 400;
+                margin-right: 4px;
+            }
+            .sec-note {
+                font-size: 0.78rem;
+                font-weight: 400;
+                color: var(--muted);
+                margin-left: 8px;
+            }
+
+            /* ── ASCII bordered table ── */
+            .asc {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.85rem;
+            }
+            .asc th,
+            .asc td {
+                border: 1px solid var(--border);
+                padding: 4px 12px;
+                text-align: left;
+                white-space: nowrap;
+            }
+            .asc td.wrap {
+                white-space: normal;
+            }
+            .asc thead th {
+                font-weight: 700;
+                background: var(--surface);
+            }
+            .asc tbody tr:hover td {
+                background: rgba(128, 128, 128, 0.06);
+            }
+            .asc .muted {
+                color: var(--muted);
+                font-size: 0.8rem;
+            }
+            .asc .mono {
+                font-family: monospace;
                 font-size: 0.8rem;
                 color: var(--muted);
-                background: var(--surface);
-                border: 1px solid var(--border);
-                padding: 4px 10px;
-                border-radius: 20px;
+                max-width: 240px;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
-            .card {
-                background: var(--surface);
-                border: 1px solid var(--border);
-                border-radius: var(--radius);
-                padding: 20px;
-                margin-bottom: 20px;
+            .asc .right {
+                text-align: right;
             }
-            .card h2 {
-                font-size: 0.9rem;
-                font-weight: 600;
+            .asc .center {
+                text-align: center;
+            }
+            .empty-row td {
                 color: var(--muted);
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-bottom: 16px;
+                text-align: center;
+                padding: 10px 12px;
             }
-            .form-row {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
+
+            /* ── Inline stat table ── */
+            .stat-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-bottom: 8px;
             }
-            input[type='text'],
-            input[type='password'] {
-                flex: 1;
-                min-width: 160px;
+            @media (min-width: 600px) {
+                .stat-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+            @media (min-width: 800px) {
+                .stat-grid {
+                    grid-template-columns: repeat(4, 1fr);
+                }
+            }
+
+            /* ── Type badges ── */
+            .badge {
+                font-size: 0.7rem;
+                padding: 1px 5px;
+                border: 1px solid;
+                border-radius: 2px;
+                font-weight: 700;
+                white-space: nowrap;
+            }
+            .b-rss {
+                color: var(--success);
+                border-color: var(--success);
+            }
+            .b-static {
+                color: var(--muted);
+                border-color: var(--border);
+            }
+            .b-jina {
+                color: var(--accent);
+                border-color: var(--accent);
+            }
+            .b-browser {
+                color: #6ea8fe;
+                border-color: #6ea8fe;
+            }
+            .b-ok {
+                color: var(--success);
+                border-color: var(--success);
+            }
+            .b-err {
+                color: var(--danger);
+                border-color: var(--danger);
+            }
+
+            /* ── Form elements ── */
+            input,
+            select {
+                font-family: inherit;
+                font-size: 0.85rem;
                 background: var(--bg);
-                border: 1px solid var(--border);
                 color: var(--text);
-                padding: 9px 12px;
-                border-radius: var(--radius);
-                font-size: 0.875rem;
+                border: 1px solid var(--border);
+                padding: 4px 9px;
+                border-radius: 0;
                 outline: none;
             }
-            input:focus {
+            input:focus,
+            select:focus {
                 border-color: var(--accent);
             }
             input::placeholder {
                 color: var(--muted);
             }
+            .row {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            .row input {
+                flex: 1;
+                min-width: 140px;
+            }
+
             button {
-                padding: 9px 16px;
-                border-radius: var(--radius);
-                border: none;
-                cursor: pointer;
-                font-size: 0.875rem;
+                font-family: inherit;
+                font-size: 0.83rem;
                 font-weight: 500;
-                transition: opacity 0.15s;
+                padding: 4px 12px;
+                border: 1px solid var(--border);
+                border-radius: 0;
+                background: var(--surface);
+                color: var(--text);
+                cursor: pointer;
+                transition: opacity 0.1s;
             }
             button:hover {
-                opacity: 0.85;
+                opacity: 0.72;
             }
             button:disabled {
                 opacity: 0.4;
                 cursor: default;
             }
-            .btn-primary {
+            .btn-p {
                 background: var(--accent);
                 color: #fff;
+                border-color: var(--accent);
             }
-            .btn-ghost {
-                background: transparent;
-                color: var(--muted);
-                border: 1px solid var(--border);
-            }
-            .btn-danger {
-                background: transparent;
+            .btn-d {
                 color: var(--danger);
-                border: 1px solid var(--danger);
-                padding: 6px 10px;
-                font-size: 0.8rem;
-            }
-            .btn-copy {
+                border-color: var(--danger);
                 background: transparent;
-                color: var(--muted);
-                border: 1px solid var(--border);
-                padding: 6px 10px;
-                font-size: 0.8rem;
-            }
-            .btn-copy.copied {
-                color: var(--success);
-                border-color: var(--success);
             }
             .btn-sm {
-                padding: 6px 12px;
-                font-size: 0.8rem;
+                padding: 2px 7px;
+                font-size: 0.75rem;
+            }
+            .btn-ico {
+                padding: 1px 6px;
+                font-size: 0.82rem;
             }
 
-            .feed-list,
-            .search-list {
+            /* ── Tabs ── */
+            .tabs {
+                display: flex;
+                border-bottom: 1px solid var(--border);
+                margin-bottom: 10px;
+            }
+            .tab {
+                background: transparent;
+                border: none;
+                border-bottom: 2px solid transparent;
+                padding: 4px 12px;
+                margin-bottom: -1px;
+                border-radius: 0;
+                color: var(--muted);
+                font-size: 0.85rem;
+            }
+            .tab.active {
+                color: var(--accent);
+                border-bottom-color: var(--accent);
+            }
+
+            /* ── Search ── */
+            .sr-status {
+                font-size: 0.78rem;
+                color: var(--muted);
+                margin: 6px 0 4px;
+                min-height: 18px;
+            }
+            .sr-list {
                 display: flex;
                 flex-direction: column;
-                gap: 8px;
+                gap: 4px;
             }
-            .feed-item,
-            .search-item {
+            .sr-item {
                 display: flex;
-                align-items: center;
-                gap: 12px;
-                background: var(--bg);
+                align-items: flex-start;
+                gap: 10px;
                 border: 1px solid var(--border);
-                border-radius: var(--radius);
-                padding: 12px 14px;
+                padding: 6px 10px;
+                background: var(--surface);
             }
-            .feed-info,
-            .search-info {
+            .sr-info {
                 flex: 1;
                 min-width: 0;
             }
-            .feed-label,
-            .search-name {
-                font-weight: 500;
-                font-size: 0.9rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+            .sr-name {
+                font-size: 0.88rem;
+                font-weight: 600;
             }
-            .feed-path {
-                font-size: 0.78rem;
+            .sr-meta {
+                font-size: 0.75rem;
                 color: var(--muted);
                 margin-top: 2px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
-            .search-meta {
-                font-size: 0.78rem;
-                color: var(--muted);
+            .sr-cats {
                 margin-top: 3px;
-            }
-            .search-meta code {
-                background: rgba(255, 255, 255, 0.06);
-                padding: 1px 5px;
-                border-radius: 4px;
-                font-size: 0.76rem;
-            }
-            .search-cats {
-                margin-top: 5px;
                 display: flex;
-                flex-wrap: wrap;
                 gap: 4px;
+                flex-wrap: wrap;
             }
             .cat {
-                font-size: 0.72rem;
-                padding: 2px 7px;
-                border-radius: 12px;
-                background: rgba(246, 130, 31, 0.12);
-                color: var(--accent);
-                border: 1px solid rgba(246, 130, 31, 0.25);
-            }
-            .feed-actions {
-                display: flex;
-                gap: 6px;
-                flex-shrink: 0;
-            }
-
-            .key-row {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .key-status {
-                font-size: 0.8rem;
-                padding: 4px 10px;
-                border-radius: 20px;
-                flex-shrink: 0;
-            }
-            .key-status.set {
-                background: rgba(76, 175, 130, 0.15);
-                color: var(--success);
-            }
-            .key-status.unset {
-                background: rgba(122, 127, 154, 0.15);
-                color: var(--muted);
-            }
-
-            .section-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 16px;
-            }
-            .count {
-                font-size: 0.8rem;
-                color: var(--muted);
-                background: var(--bg);
+                font-size: 0.67rem;
+                padding: 1px 5px;
                 border: 1px solid var(--border);
-                padding: 2px 8px;
-                border-radius: 12px;
-            }
-            .empty {
-                text-align: center;
                 color: var(--muted);
-                padding: 24px;
-                font-size: 0.9rem;
             }
-            .hint {
-                font-size: 0.78rem;
-                color: var(--muted);
-                margin-top: 10px;
-            }
-            .search-status {
-                font-size: 0.78rem;
-                color: var(--muted);
-                margin-top: 8px;
-                min-height: 18px;
-            }
-
             mark {
-                background: rgba(246, 130, 31, 0.25);
-                color: var(--accent);
-                border-radius: 2px;
+                background: var(--mark);
+                color: inherit;
                 padding: 0 1px;
                 font-style: normal;
             }
 
-            .toast {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
+            /* ── Misc ── */
+            .hint {
+                font-size: 0.75rem;
+                color: var(--muted);
+                margin-top: 8px;
+                line-height: 1.6;
+            }
+            .hint code {
                 background: var(--surface);
                 border: 1px solid var(--border);
-                border-radius: var(--radius);
-                padding: 10px 16px;
-                font-size: 0.85rem;
+                padding: 0 4px;
+                font-size: 0.72rem;
+            }
+            .edit-row {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+            }
+            .edit-row input {
+                flex: 1;
+                min-width: 80px;
+                padding: 2px 6px;
+                font-size: 0.82rem;
+            }
+
+            .toast {
+                position: fixed;
+                bottom: 14px;
+                right: 14px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                padding: 7px 14px;
+                font-size: 0.82rem;
                 opacity: 0;
-                transform: translateY(8px);
-                transition: all 0.2s;
+                transform: translateY(5px);
+                transition: all 0.15s;
                 pointer-events: none;
                 z-index: 100;
             }
@@ -291,66 +399,242 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+
+            .loading {
+                color: var(--muted);
+                font-size: 0.82rem;
+            }
+            body.compact .asc th,
+            body.compact .asc td {
+                padding: 2px 8px;
+            }
         </style>
     </head>
     <body>
         <header>
-            <h1>RSS<span>Hub</span> Dashboard</h1>
-            <div class="instance-url" id="instanceUrl"></div>
+            <div>
+                <div class="site-title"># RSS<span>Hub</span> Dashboard</div>
+                <div class="hdr-meta" id="instanceUrl"></div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center">
+                <button id="themeBtn" onclick="toggleTheme()" style="font-size: 0.78rem; padding: 3px 9px">● Dark</button>
+                <button onclick="refreshAll()" style="font-size: 0.78rem; padding: 3px 9px" title="Refresh stats and feeds">↺ Refresh</button>
+            </div>
         </header>
 
-        <div class="card">
-            <h2>Access Key</h2>
-            <div class="key-row">
-                <input type="password" id="keyInput" placeholder="Paste your ACCESS_KEY (leave empty if none set)" style="flex: 1" />
-                <button class="btn-primary" onclick="saveKey()">Save</button>
-                <button class="btn-ghost" onclick="clearKey()">Clear</button>
-                <span class="key-status" id="keyStatus">unset</span>
+        <!-- ## Stats -->
+        <div class="sec"><span class="sec-prefix">##</span>Stats <span class="sec-note" id="statsTs"></span></div>
+        <table class="asc" id="statsTable">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody id="statsList">
+                <tr class="empty-row">
+                    <td colspan="4" class="loading">Loading stats…</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ## Settings -->
+        <div class="sec"><span class="sec-prefix">##</span>Settings</div>
+        <table class="asc">
+            <tbody>
+                <tr>
+                    <td style="width: 140px; font-weight: 700">Access Key</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0">
+                            <input type="password" id="keyInput" placeholder="ACCESS_KEY (blank if none)" style="flex: 1; min-width: 180px" />
+                            <button onclick="saveKey()">Save</button>
+                            <button onclick="clearKey()">Clear</button>
+                            <span id="keyStatus" class="badge b-err">no key</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">Route Index</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 10px; align-items: center">
+                            <span id="indexCacheStatus" class="muted" style="color: var(--muted); font-size: 0.82rem">—</span>
+                            <button onclick="clearIndexCache()">Clear Cache</button>
+                            <span style="font-size: 0.78rem; color: var(--muted)">TTL: 1 hour · refreshes automatically</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">Default Mode</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 8px; align-items: center">
+                            <select id="defaultWatchMode" onchange="saveDefaultMode()" style="flex: none">
+                                <option value="false">Static (direct fetch)</option>
+                                <option value="jina">Jina AI (JS rendering)</option>
+                                <option value="browser">CF Browser (puppeteer)</option>
+                            </select>
+                            <span style="font-size: 0.78rem; color: var(--muted)">default render mode for Watch URL</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">Auto-refresh</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 8px; align-items: center">
+                            <select id="autoRefresh" onchange="saveAutoRefresh()" style="flex: none">
+                                <option value="0">Off</option>
+                                <option value="60">1 min</option>
+                                <option value="300">5 min</option>
+                                <option value="900">15 min</option>
+                                <option value="1800">30 min</option>
+                            </select>
+                            <span id="arStatus" style="font-size: 0.78rem; color: var(--muted)">disabled</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">Watch Snippet</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 8px; align-items: center">
+                            <select id="snapLen" onchange="saveSnapLen()" style="flex: none">
+                                <option value="200">200 chars</option>
+                                <option value="500">500 chars</option>
+                                <option value="800">800 chars (default)</option>
+                                <option value="2000">2000 chars</option>
+                            </select>
+                            <span style="font-size: 0.78rem; color: var(--muted)">content preview length in new Watch feeds (passed as <code>?snap=N</code>)</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">Search Results</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 8px; align-items: center">
+                            <select id="maxResults" onchange="saveMaxResults()" style="flex: none">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                            <span style="font-size: 0.78rem; color: var(--muted)">max results shown in Discover Routes</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">Table Density</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 8px; align-items: center">
+                            <select id="tableDensity" onchange="saveDensity()" style="flex: none">
+                                <option value="normal">Normal</option>
+                                <option value="compact">Compact</option>
+                            </select>
+                            <span style="font-size: 0.78rem; color: var(--muted)">row padding across all tables</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">OPML Export</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 8px; align-items: center">
+                            <button onclick="exportOPML()">Export OPML</button>
+                            <span style="font-size: 0.78rem; color: var(--muted)">download all saved feeds as OPML (importable in any RSS reader)</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: 700">Watch Data</td>
+                    <td class="wrap" colspan="3">
+                        <div class="row" style="margin: 0; gap: 8px; align-items: center">
+                            <button class="btn-d" onclick="clearWatchData()">Clear All Snapshots</button>
+                            <span style="font-size: 0.78rem; color: var(--muted)">delete all <code>watch:snap:*</code> and <code>watch:items:*</code> entries from KV — resets change detection</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ## My Feeds -->
+        <div class="sec"><span class="sec-prefix">##</span>My Feeds <span class="sec-note" id="feedStats"></span></div>
+        <table class="asc">
+            <thead>
+                <tr>
+                    <th class="col-label">Label</th>
+                    <th>Path / Target</th>
+                    <th>Type</th>
+                    <th>Added</th>
+                    <th class="right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="feedList">
+                <tr class="empty-row">
+                    <td colspan="5" class="loading">Loading…</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ## Add Feed -->
+        <div class="sec"><span class="sec-prefix">##</span>Add Feed</div>
+        <div class="tabs">
+            <button class="tab active" id="tabWatchBtn" onclick="switchTab('watch')">Watch URL</button>
+            <button class="tab" id="tabRssBtn" onclick="switchTab('rss')">RSS Route</button>
+        </div>
+        <div id="tabWatch">
+            <div class="row">
+                <input type="text" id="watchUrlInput" placeholder="https://example.com/page" style="flex: 3; min-width: 180px" />
+                <input type="text" id="watchLabelInput" placeholder="Label (optional)" style="flex: 1; min-width: 110px" />
             </div>
+            <div class="row">
+                <select id="watchJsMode" style="flex: 1">
+                    <option value="false">Static — direct fetch, no JS</option>
+                    <option value="jina">Jina AI — free JS rendering (rate limited)</option>
+                    <option value="browser">CF Browser — puppeteer, full JS (paid plan)</option>
+                </select>
+                <button class="btn-p" onclick="watchUrl()">Watch</button>
+            </div>
+            <div class="hint">Polls for content changes and delivers updates as RSS. Paste the generated URL into your RSS reader.</div>
+        </div>
+        <div id="tabRss" style="display: none">
+            <div class="row">
+                <input type="text" id="pathInput" placeholder="/hackernews/best" style="flex: 2; min-width: 150px" />
+                <input type="text" id="labelInput" placeholder="Label (optional)" style="flex: 1; min-width: 110px" />
+                <button class="btn-p" onclick="addFeed()">Add</button>
+            </div>
+            <div class="hint">Examples: <code>/hackernews/best</code> · <code>/github/trending/go</code> · <code>/youtube/user/username</code></div>
         </div>
 
-        <div class="card">
-            <div class="section-header">
-                <h2>My Feeds <span class="count" id="feedCount">0</span></h2>
-            </div>
-            <div class="feed-list" id="feedList"><div class="empty">Loading…</div></div>
+        <!-- ## Discover Routes -->
+        <div class="sec"><span class="sec-prefix">##</span>Discover Routes</div>
+        <div class="row" style="margin-bottom: 4px">
+            <input type="text" id="searchInput" placeholder="Search 1000+ routes — try: github, podcast, hn, youtube, hkjc…" style="flex: 1" oninput="onSearchDebounced(this.value)" autocomplete="off" spellcheck="false" />
         </div>
-
-        <div class="card">
-            <h2>Watch Any URL</h2>
-            <div class="form-row">
-                <input type="text" id="watchUrlInput" placeholder="https://example.com/products" style="flex: 3" />
-                <input type="text" id="watchLabelInput" placeholder="Label (optional)" style="flex: 1" />
-                <button class="btn-primary" onclick="watchUrl()">Watch</button>
-            </div>
-            <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; cursor: pointer; user-select: none">
-                <input type="checkbox" id="watchJsMode" style="width: 15px; height: 15px; accent-color: var(--accent)" />
-                <span>JS rendering <span style="color: var(--muted)">(via Jina AI — for React/Angular/SPA sites)</span></span>
-            </label>
-            <div class="hint">Detects content changes on any public URL. JS mode renders JavaScript before capturing — slower but works on dynamic sites. Paste the feed URL into any RSS reader.</div>
-        </div>
-
-        <div class="card">
-            <h2>Discover</h2>
-            <input type="text" id="searchInput" placeholder="Search 1000+ feeds — try: github, podcast, youtube, hn, reddit…" style="width: 100%" oninput="onSearch(this.value)" autocomplete="off" spellcheck="false" />
-            <div class="search-status" id="searchStatus"></div>
-            <div class="search-list" id="searchList"></div>
-            <div class="hint">Powered by fuzzy search — typos OK. Click <strong>+ Add</strong> to save instantly.</div>
-        </div>
-
-        <div class="card">
-            <h2>Add Manually</h2>
-            <div class="form-row">
-                <input type="text" id="pathInput" placeholder="/hackernews/best" style="flex: 2" />
-                <input type="text" id="labelInput" placeholder="Label (optional)" style="flex: 1" />
-                <button class="btn-primary" onclick="addFeed()">Add</button>
-            </div>
-            <div class="hint">Examples: <code>/hackernews/best</code> &nbsp;·&nbsp; <code>/github/trending/javascript</code> &nbsp;·&nbsp; <code>/youtube/user/username</code></div>
-        </div>
+        <div class="sr-status" id="searchStatus">Loading index…</div>
+        <div class="sr-list" id="searchList"></div>
+        <div class="hint">Inline search (no CDN). All tokens must match. Click <strong>[+ Add]</strong> to save instantly.</div>
 
         <div class="toast" id="toast"></div>
 
         <script>
+            /* ── Theme ── */
+            function isDark() {
+                const t = document.documentElement.getAttribute('data-theme');
+                return t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+            function applyTheme() {
+                const btn = document.getElementById('themeBtn');
+                if (btn) btn.textContent = isDark() ? '☀ Light' : '● Dark';
+            }
+            function toggleTheme() {
+                const next = isDark() ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('rsshub_theme', next);
+                applyTheme();
+            }
+            (function () {
+                const saved = localStorage.getItem('rsshub_theme');
+                if (saved) document.documentElement.setAttribute('data-theme', saved);
+                applyTheme();
+            })();
+
             const origin = location.origin;
             document.getElementById('instanceUrl').textContent = origin;
 
@@ -362,107 +646,387 @@
                 const k = document.getElementById('keyInput').value.trim();
                 localStorage.setItem('rsshub_key', k);
                 updateKeyStatus();
-                toast(k ? 'Access key saved' : 'Key cleared');
-                loadFeeds();
+                toast(k ? 'Key saved' : 'Key cleared');
+                clearIndexCache(true);
+                loadFeeds(true);
+                loadStats();
                 loadIndex();
             }
             function clearKey() {
                 localStorage.removeItem('rsshub_key');
                 document.getElementById('keyInput').value = '';
                 updateKeyStatus();
-                loadFeeds();
+                loadFeeds(true);
             }
             function updateKeyStatus() {
                 const el = document.getElementById('keyStatus');
                 const k = getKey();
-                el.textContent = k ? 'set' : 'no key';
-                el.className = 'key-status ' + (k ? 'set' : 'unset');
+                el.textContent = k ? 'key set' : 'no key';
+                el.className = 'badge ' + (k ? 'b-ok' : 'b-err');
             }
             function apiUrl(path) {
                 const k = getKey();
-                const sep = path.includes('?') ? '&' : '?';
-                return k ? `${path}${sep}key=${encodeURIComponent(k)}` : path;
+                return k ? `${path}${path.includes('?') ? '&' : '?'}key=${encodeURIComponent(k)}` : path;
+            }
+
+            /* ── Settings ── */
+            function loadSettings() {
+                const mode = localStorage.getItem('rsshub_default_mode') || 'false';
+                const sel = document.getElementById('defaultWatchMode');
+                if (sel) sel.value = mode;
+                updateIndexCacheStatus();
+                // auto-refresh
+                const arSecs = parseInt(localStorage.getItem('rsshub_auto_refresh') || '0');
+                const arSel = document.getElementById('autoRefresh');
+                if (arSel) arSel.value = String(arSecs);
+                if (arSecs > 0) startAutoRefresh(arSecs);
+                // snap len
+                const snap = localStorage.getItem('rsshub_snap_len') || '800';
+                const snapSel = document.getElementById('snapLen');
+                if (snapSel) snapSel.value = snap;
+                // max results
+                _maxResults = parseInt(localStorage.getItem('rsshub_max_results') || '12');
+                const mrSel = document.getElementById('maxResults');
+                if (mrSel) mrSel.value = String(_maxResults);
+                // density
+                const density = localStorage.getItem('rsshub_density') || 'normal';
+                const densSel = document.getElementById('tableDensity');
+                if (densSel) densSel.value = density;
+                applyDensity(density);
+            }
+            function saveDefaultMode() {
+                const val = document.getElementById('defaultWatchMode').value;
+                localStorage.setItem('rsshub_default_mode', val);
+                document.getElementById('watchJsMode').value = val;
+                toast('Default mode saved');
+            }
+            /* Auto-refresh */
+            let _arTimer;
+            function startAutoRefresh(secs) {
+                clearInterval(_arTimer);
+                _arTimer = setInterval(() => refreshAll(), secs * 1000);
+                const el = document.getElementById('arStatus');
+                if (el) el.textContent = `every ${secs < 60 ? secs + 's' : secs / 60 + 'min'}`;
+            }
+            function saveAutoRefresh() {
+                const secs = parseInt(document.getElementById('autoRefresh').value);
+                localStorage.setItem('rsshub_auto_refresh', String(secs));
+                clearInterval(_arTimer);
+                const el = document.getElementById('arStatus');
+                if (secs > 0) {
+                    startAutoRefresh(secs);
+                    toast('Auto-refresh: every ' + (secs < 60 ? secs + 's' : secs / 60 + 'min'));
+                } else {
+                    if (el) el.textContent = 'disabled';
+                    toast('Auto-refresh off');
+                }
+            }
+            /* Snap length */
+            function saveSnapLen() {
+                const val = document.getElementById('snapLen').value;
+                localStorage.setItem('rsshub_snap_len', val);
+                toast('Snippet length: ' + val + ' chars');
+            }
+            function getSnapLen() {
+                return parseInt(localStorage.getItem('rsshub_snap_len') || '800');
+            }
+            /* Max results */
+            let _maxResults = 12;
+            function saveMaxResults() {
+                _maxResults = parseInt(document.getElementById('maxResults').value);
+                localStorage.setItem('rsshub_max_results', String(_maxResults));
+                toast('Max results: ' + _maxResults);
+            }
+            /* Table density */
+            function saveDensity() {
+                const val = document.getElementById('tableDensity').value;
+                localStorage.setItem('rsshub_density', val);
+                applyDensity(val);
+                toast('Density: ' + val);
+            }
+            function applyDensity(val) {
+                document.body.classList.toggle('compact', val === 'compact');
+            }
+            /* OPML Export */
+            function exportOPML() {
+                if (!cachedFeeds.length) {
+                    toast('No feeds to export');
+                    return;
+                }
+                const x = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                const items = cachedFeeds.map((f) => `    <outline type="rss" text="${x(f.label)}" title="${x(f.label)}" xmlUrl="${x(origin + f.path)}"/>`).join('\n');
+                const opml = `<?xml version="1.0" encoding="UTF-8"?>\n<opml version="1.0">\n  <head><title>RSSHub Feeds</title></head>\n  <body>\n${items}\n  </body>\n</opml>`;
+                const a = Object.assign(document.createElement('a'), {
+                    href: URL.createObjectURL(new Blob([opml], { type: 'text/xml' })),
+                    download: 'rsshub-feeds.opml',
+                });
+                a.click();
+                URL.revokeObjectURL(a.href);
+                toast('Exported ' + cachedFeeds.length + ' feed' + (cachedFeeds.length !== 1 ? 's' : ''));
+            }
+            /* Clear watch data */
+            async function clearWatchData() {
+                if (!confirm('Delete all watch snapshots and item history from KV?\nThis resets change detection for every Watch feed.')) return;
+                const r = await fetch(apiUrl('/api/watch/snapshots'), { method: 'DELETE' });
+                if (r.ok) {
+                    const d = await r.json();
+                    toast('Cleared ' + d.deleted + ' KV entries');
+                    loadStats();
+                } else toast('Failed: HTTP ' + r.status);
+            }
+            function updateIndexCacheStatus() {
+                const ts = parseInt(localStorage.getItem('rsshub_routes_v1_ts') || '0');
+                const el = document.getElementById('indexCacheStatus');
+                if (!el) return;
+                if (!ts) {
+                    el.textContent = 'no cache';
+                    return;
+                }
+                const age = Math.floor((Date.now() - ts) / 60000);
+                el.textContent = age < 60 ? `cached ${age}m ago` : `cached ${Math.floor(age / 60)}h ${age % 60}m ago`;
+            }
+            function clearIndexCache(silent = false) {
+                localStorage.removeItem('rsshub_routes_v1');
+                localStorage.removeItem('rsshub_routes_v1_ts');
+                routeIndex = null;
+                updateIndexCacheStatus();
+                if (!silent) {
+                    toast('Index cache cleared');
+                    loadIndex();
+                }
+            }
+
+            /* ── Stats ── */
+            async function loadStats() {
+                const tbody = document.getElementById('statsList');
+                const tsEl = document.getElementById('statsTs');
+                try {
+                    const res = await fetch(apiUrl('/api/stats'));
+                    if (res.status === 401) {
+                        tbody.innerHTML = '<tr class="empty-row"><td colspan="4">Unauthorized — set access key above.</td></tr>';
+                        return;
+                    }
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const s = await res.json();
+                    const b = s.bindings || {};
+                    const f = s.feeds || {};
+                    const rows = [
+                        ['Total Feeds', f.total ?? 0, 'KV Namespace', b.kv ? bindBadge(true, 'bound') : bindBadge(false, 'unbound')],
+                        ['RSS Feeds', f.rss ?? 0, 'CF Browser', bindBadge(b.browser, b.browser ? 'bound' : 'unbound')],
+                        ['Watch Feeds', f.watch ?? 0, 'Jina API Key', bindBadge(b.jinaKey, b.jinaKey ? 'set' : 'unset')],
+                        ['KV Snapshots', s.snapshots ?? 0, 'Route Index', routeIndex ? routeIndex.length + ' routes' : 'not loaded'],
+                    ];
+                    tbody.innerHTML = rows.map(([k1, v1, k2, v2]) => `<tr><td style="font-weight:700">${k1}</td><td>${v1}</td><td style="font-weight:700">${k2}</td><td>${v2}</td></tr>`).join('');
+                    if (s.ts) {
+                        const ago = timeAgo(s.ts);
+                        tsEl.textContent = `(as of ${ago})`;
+                    }
+                } catch (err) {
+                    tbody.innerHTML = `<tr class="empty-row"><td colspan="4">Could not load stats — ${String(err)}</td></tr>`;
+                }
+            }
+
+            function bindBadge(ok, label) {
+                return `<span class="badge ${ok ? 'b-ok' : 'b-err'}">${ok ? '✓' : '✗'} ${label}</span>`;
+            }
+
+            /* ── Feed helpers ── */
+            function parseFeedMeta(f) {
+                if (!f.path.startsWith('/watch')) return { type: 'RSS', badge: 'b-rss', label: 'RSS', display: f.path };
+                try {
+                    const p = new URLSearchParams(f.path.slice(f.path.indexOf('?') + 1));
+                    const url = p.get('url') || '',
+                        js = p.get('js') || 'false';
+                    const mode = js === 'browser' ? 'CF Browser' : js === 'jina' || js === 'true' ? 'Jina AI' : 'Static';
+                    const badge = js === 'browser' ? 'b-browser' : js === 'jina' || js === 'true' ? 'b-jina' : 'b-static';
+                    let display = url;
+                    try {
+                        display = new URL(url).hostname;
+                    } catch {}
+                    return { type: 'Watch', badge, label: mode, display };
+                } catch {
+                    return { type: 'Watch', badge: 'b-static', label: 'Static', display: f.path };
+                }
+            }
+
+            function timeAgo(iso) {
+                const d = Math.floor((Date.now() - new Date(iso)) / 60000);
+                if (d < 1) return 'just now';
+                if (d < 60) return d + 'm ago';
+                const h = Math.floor(d / 60);
+                if (h < 24) return h + 'h ago';
+                return Math.floor(h / 24) + 'd ago';
             }
 
             /* ── My Feeds ── */
-            async function loadFeeds() {
+            let cachedFeeds = [];
+            const LS_FEEDS = 'rsshub_feeds_v1';
+
+            function renderFeeds(feeds) {
+                cachedFeeds = feeds;
                 const list = document.getElementById('feedList');
-                const count = document.getElementById('feedCount');
+                const stats = document.getElementById('feedStats');
+                if (!feeds.length) {
+                    list.innerHTML = '<tr class="empty-row"><td colspan="5">No feeds yet — add via Watch URL or Discover.</td></tr>';
+                    stats.textContent = '';
+                    return;
+                }
+                const watch = feeds.filter((f) => f.path.startsWith('/watch'));
+                const rss = feeds.length - watch.length;
+                const modes = {};
+                watch.forEach((f) => {
+                    const l = parseFeedMeta(f).label;
+                    modes[l] = (modes[l] || 0) + 1;
+                });
+                const modeParts = Object.entries(modes)
+                    .map(([k, v]) => `${v}×${k}`)
+                    .join(' · ');
+                stats.textContent = `${feeds.length} total · ${rss} RSS · ${watch.length} Watch${modeParts ? ' (' + modeParts + ')' : ''}`;
+                list.innerHTML = feeds
+                    .map((f) => {
+                        const m = parseFeedMeta(f);
+                        return `<tr data-id="${esc(f.id)}" data-label="${esc(f.label)}" data-path="${esc(f.path)}">
+        <td id="lbl-${esc(f.id)}">${esc(f.label)}</td>
+        <td class="mono" title="${esc(f.path)}">${esc(m.display)}</td>
+        <td><span class="badge ${m.badge}">${m.label}</span></td>
+        <td class="muted">${timeAgo(f.addedAt)}</td>
+        <td class="right">
+          <button class="btn-ico btn-sm" onclick="copyFeedRow(this)" title="Copy RSS URL">⎘</button>
+          <button class="btn-ico btn-sm" onclick="startEditRow(this)" title="Edit label">✎</button>
+          <button class="btn-ico btn-sm btn-d" onclick="deleteFeedRow(this)" title="Remove">×</button>
+        </td>
+      </tr>`;
+                    })
+                    .join('');
+            }
+
+            async function loadFeeds(force = false) {
+                if (!force) {
+                    try {
+                        const r = localStorage.getItem(LS_FEEDS);
+                        if (r) renderFeeds(JSON.parse(r));
+                    } catch {}
+                }
                 try {
                     const res = await fetch(apiUrl('/api/feeds'));
                     if (res.status === 401) {
-                        list.innerHTML = '<div class="empty">Unauthorized — set your access key above.</div>';
-                        count.textContent = '0';
+                        document.getElementById('feedList').innerHTML = '<tr class="empty-row"><td colspan="5">Unauthorized — set access key above.</td></tr>';
+                        document.getElementById('feedStats').textContent = '';
+                        localStorage.removeItem(LS_FEEDS);
                         return;
                     }
                     const feeds = await res.json();
-                    count.textContent = feeds.length;
-                    if (!feeds.length) {
-                        list.innerHTML = '<div class="empty">No feeds yet. Use Discover or Add Manually below.</div>';
-                        return;
-                    }
-                    list.innerHTML = feeds
-                        .map(
-                            (f) => `
-        <div class="feed-item" id="fi-${esc(f.id)}">
-          <div class="feed-info">
-            <div class="feed-label">${esc(f.label)}</div>
-            <div class="feed-path">${esc(f.path)}</div>
-          </div>
-          <div class="feed-actions">
-            <button class="btn-copy" onclick="copyFeed('${esc(f.path)}',this)">Copy URL</button>
-            <button class="btn-danger" onclick="deleteFeed('${esc(f.id)}')">Remove</button>
-          </div>
-        </div>`
-                        )
-                        .join('');
+                    try {
+                        localStorage.setItem(LS_FEEDS, JSON.stringify(feeds));
+                    } catch {}
+                    renderFeeds(feeds);
                 } catch {
-                    list.innerHTML = '<div class="empty">Failed to load feeds.</div>';
+                    if (!cachedFeeds.length) document.getElementById('feedList').innerHTML = '<tr class="empty-row"><td colspan="5">Failed to load — check network.</td></tr>';
                 }
             }
 
-            async function deleteFeed(id) {
-                const res = await fetch(apiUrl(`/api/feeds/${id}`), { method: 'DELETE' });
-                if (res.ok) {
-                    toast('Removed');
-                    loadFeeds();
-                } else {
-                    toast('Failed to remove');
-                }
+            /* ── Row actions ── */
+            function getRow(el) {
+                return el.closest('tr[data-id]');
             }
-
-            function copyFeed(path, btn) {
+            function copyFeedRow(el) {
+                const path = getRow(el).dataset.path;
                 navigator.clipboard.writeText(origin + path).then(() => {
-                    btn.textContent = 'Copied!';
-                    btn.classList.add('copied');
+                    const o = el.textContent;
+                    el.textContent = '✓';
+                    el.style.color = 'var(--success)';
                     setTimeout(() => {
-                        btn.textContent = 'Copy URL';
-                        btn.classList.remove('copied');
-                    }, 2000);
+                        el.textContent = o;
+                        el.style.color = '';
+                    }, 1500);
                 });
             }
+            function deleteFeedRow(el) {
+                deleteFeed(getRow(el).dataset.id);
+            }
+            async function deleteFeed(id) {
+                const r = await fetch(apiUrl(`/api/feeds/${id}`), { method: 'DELETE' });
+                if (r.ok) {
+                    toast('Removed');
+                    loadFeeds(true);
+                    loadStats();
+                } else toast('Failed to remove');
+            }
 
-            /* ── Manual Add ── */
+            /* ── Inline label edit ── */
+            let _eid = null,
+                _elab = null;
+            function startEditRow(el) {
+                const row = getRow(el);
+                startEdit(row.dataset.id, row.dataset.label);
+            }
+            function startEdit(id, label) {
+                if (_eid && _eid !== id) cancelEdit();
+                _eid = id;
+                _elab = label;
+                const cell = document.getElementById('lbl-' + id);
+                if (!cell) return;
+                cell.innerHTML = `<div class="edit-row"><input id="editInput" type="text" value="${esc(label)}" onkeydown="if(event.key==='Enter')saveEdit();if(event.key==='Escape')cancelEdit()"><button class="btn-p btn-sm" onclick="saveEdit()">✓</button><button class="btn-sm" onclick="cancelEdit()">✗</button></div>`;
+                const inp = document.getElementById('editInput');
+                if (inp) {
+                    inp.focus();
+                    inp.select();
+                }
+            }
+            function cancelEdit() {
+                if (!_eid) return;
+                const cell = document.getElementById('lbl-' + _eid);
+                if (cell) cell.textContent = _elab;
+                _eid = null;
+                _elab = null;
+            }
+            async function saveEdit() {
+                if (!_eid) return;
+                const inp = document.getElementById('editInput');
+                if (!inp) return;
+                const label = inp.value.trim();
+                if (!label) {
+                    toast('Label cannot be empty');
+                    return;
+                }
+                const id = _eid;
+                _eid = null;
+                _elab = null;
+                const r = await fetch(apiUrl(`/api/feeds/${id}`), { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label }) });
+                if (r.ok) {
+                    toast('Updated');
+                    loadFeeds(true);
+                } else {
+                    toast('Failed to update');
+                    loadFeeds(true);
+                }
+            }
+
+            /* ── Tabs ── */
+            function switchTab(t) {
+                document.getElementById('tabWatch').style.display = t === 'watch' ? '' : 'none';
+                document.getElementById('tabRss').style.display = t === 'rss' ? '' : 'none';
+                document.getElementById('tabWatchBtn').className = 'tab' + (t === 'watch' ? ' active' : '');
+                document.getElementById('tabRssBtn').className = 'tab' + (t === 'rss' ? ' active' : '');
+            }
+
+            /* ── Add feeds ── */
             async function addFeedFrom(path, label) {
                 if (!path.startsWith('/')) {
                     toast('Path must start with /');
-                    return;
+                    return false;
                 }
-                const res = await fetch(apiUrl('/api/feeds'), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ path, label }),
-                });
-                if (res.ok) {
+                const r = await fetch(apiUrl('/api/feeds'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path, label }) });
+                if (r.ok) {
                     toast('Added: ' + (label || path));
-                    loadFeeds();
+                    loadFeeds(true);
+                    loadStats();
                     return true;
                 }
-                const err = await res.json().catch(() => ({}));
-                toast(err.error || 'Failed to add feed');
+                const e = await r.json().catch(() => ({}));
+                toast(e.error || 'Failed to add');
                 return false;
             }
-
             async function addFeed() {
                 const path = document.getElementById('pathInput').value.trim();
                 const label = document.getElementById('labelInput').value.trim();
@@ -471,137 +1035,186 @@
                     document.getElementById('labelInput').value = '';
                 }
             }
-
-            /* ── Watch URL ── */
             async function watchUrl() {
                 const url = document.getElementById('watchUrlInput').value.trim();
                 const label = document.getElementById('watchLabelInput').value.trim();
-                const jsMode = document.getElementById('watchJsMode').checked;
+                const jsMode = document.getElementById('watchJsMode').value;
                 if (!url || !url.startsWith('http')) {
                     toast('Enter a valid http/https URL');
                     return;
                 }
                 let path = '/watch?url=' + encodeURIComponent(url);
                 if (label) path += '&label=' + encodeURIComponent(label);
-                if (jsMode) path += '&js=true';
-                const displayLabel = (label || 'Watch: ' + new URL(url).hostname) + (jsMode ? ' (JS)' : '');
-                if (await addFeedFrom(path, displayLabel)) {
+                if (jsMode !== 'false') path += '&js=' + jsMode;
+                const snap = getSnapLen();
+                if (snap !== 800) path += '&snap=' + snap;
+                const ml = jsMode === 'jina' ? ' (Jina)' : jsMode === 'browser' ? ' (CF Browser)' : '';
+                const dl = (label || 'Watch: ' + new URL(url).hostname) + ml;
+                if (await addFeedFrom(path, dl)) {
                     document.getElementById('watchUrlInput').value = '';
                     document.getElementById('watchLabelInput').value = '';
-                    document.getElementById('watchJsMode').checked = false;
                 }
             }
 
-            /* ── Fuzzy Search (client-side via fuse.js) ── */
-            let fuse = null;
-            let indexSize = 0;
+            /* ── Inline search (no CDN) ── */
+            let routeIndex = null;
+            const LS_INDEX = 'rsshub_routes_v1',
+                LS_INDEX_TS = 'rsshub_routes_v1_ts';
 
-            async function loadIndex() {
-                const status = document.getElementById('searchStatus');
-                status.textContent = 'Loading route index…';
-                try {
-                    const res = await fetch(apiUrl('/api/routes/index'));
-                    if (!res.ok) {
-                        status.textContent = res.status === 401 ? 'Unauthorized — set access key.' : 'Failed to load index.';
-                        return;
-                    }
-                    const data = await res.json();
-                    indexSize = data.length;
-                    fuse = new Fuse(data, {
-                        keys: [
-                            { name: 'n', weight: 3 }, // name — highest priority
-                            { name: 'u', weight: 2 }, // website url
-                            { name: 'c', weight: 1 }, // categories
-                        ],
-                        threshold: 0.4, // 0 = exact, 1 = anything; 0.4 = reasonable typo tolerance
-                        includeScore: true,
-                        minMatchCharLength: 2,
-                        ignoreLocation: true, // don't penalise matches far from the start
-                        useExtendedSearch: false,
-                    });
-                    status.textContent = `${indexSize.toLocaleString()} routes ready — start typing to search`;
-                } catch {
-                    status.textContent = 'Could not load search index.';
+            function scoreRoute(r, tokens) {
+                const hay = (r.n + ' ' + (r.u || '') + ' ' + (r.c || []).join(' ')).toLowerCase();
+                let score = 0;
+                for (const tok of tokens) {
+                    if (!hay.includes(tok)) return 0;
+                    score += tok.length;
+                    if (r.n.toLowerCase().startsWith(tok)) score += 10;
+                    else if (r.n.toLowerCase().includes(tok)) score += 5;
                 }
+                return score;
             }
 
-            function onSearch(q) {
-                const status = document.getElementById('searchStatus');
-                const list = document.getElementById('searchList');
-                if (!fuse) {
-                    status.textContent = 'Index not loaded yet.';
-                    return;
-                }
-                if (!q.trim() || q.trim().length < 2) {
-                    list.innerHTML = '';
-                    status.textContent = `${indexSize.toLocaleString()} routes ready — start typing to search`;
-                    return;
-                }
+            function searchRoutes(needle, limit = _maxResults) {
+                if (!routeIndex || !needle.trim()) return [];
+                const tokens = needle.trim().toLowerCase().split(/\s+/).filter(Boolean);
+                const scored = routeIndex.map((r) => ({ r, s: scoreRoute(r, tokens) })).filter((x) => x.s > 0);
+                scored.sort((a, b) => b.s - a.s);
+                return scored.slice(0, limit).map((x) => x.r);
+            }
 
-                const results = fuse.search(q.trim(), { limit: 10 });
-
-                if (!results.length) {
-                    list.innerHTML = '<div class="empty">No matches. Try a shorter or different term.</div>';
-                    status.textContent = '';
-                    return;
-                }
-
-                status.textContent = `${results.length} result${results.length !== 1 ? 's' : ''}`;
-                list.innerHTML = results
-                    .map(
-                        ({ item: r }) => `
-      <div class="search-item">
-        <div class="search-info">
-          <div class="search-name">${esc(r.n)}</div>
-          <div class="search-meta">${r.u ? esc(r.u) + ' &nbsp;·&nbsp; ' : ''}<code>${esc(r.e)}</code></div>
-          ${
-              r.c && r.c.length
-                  ? `<div class="search-cats">${r.c
-                        .slice(0, 4)
-                        .map((c) => `<span class="cat">${esc(c)}</span>`)
-                        .join('')}</div>`
-                  : ''
-          }
-        </div>
-        <button class="btn-primary btn-sm" onclick="quickAdd('${esc(r.e)}','${esc(r.n)}',this)">+ Add</button>
-      </div>`
-                    )
+            function highlight(str, needle) {
+                const tokens = needle.trim().split(/\s+/).filter(Boolean);
+                if (!tokens.length) return esc(str);
+                const pat = tokens.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+                return str
+                    .split(new RegExp(`(${pat})`, 'gi'))
+                    .map((p, i) => (i % 2 === 1 ? `<mark>${esc(p)}</mark>` : esc(p)))
                     .join('');
             }
 
+            function setIndexStatus() {
+                const n = routeIndex ? routeIndex.length : 0;
+                document.getElementById('searchStatus').textContent = `${n.toLocaleString()} routes — type to search`;
+                updateIndexCacheStatus();
+            }
+
+            async function loadIndex() {
+                const status = document.getElementById('searchStatus');
+                try {
+                    const ts = parseInt(localStorage.getItem(LS_INDEX_TS) || '0');
+                    const cached = localStorage.getItem(LS_INDEX);
+                    if (cached && Date.now() - ts < 3_600_000) {
+                        routeIndex = JSON.parse(cached);
+                        setIndexStatus();
+                        return;
+                    }
+                } catch {}
+                status.textContent = 'Fetching route index…';
+                try {
+                    const res = await fetch(apiUrl('/api/routes/index'));
+                    if (res.status === 401) {
+                        status.textContent = 'Unauthorized — set access key.';
+                        return;
+                    }
+                    if (!res.ok) {
+                        status.textContent = `Index unavailable (HTTP ${res.status})`;
+                        return;
+                    }
+                    const data = await res.json();
+                    routeIndex = data;
+                    try {
+                        localStorage.setItem(LS_INDEX, JSON.stringify(data));
+                        localStorage.setItem(LS_INDEX_TS, String(Date.now()));
+                    } catch {}
+                    setIndexStatus();
+                    // refresh stats now that index is loaded
+                    loadStats();
+                } catch (e) {
+                    status.textContent = 'Could not reach /api/routes/index — check Worker logs.';
+                }
+            }
+
+            let _st;
+            function onSearchDebounced(q) {
+                clearTimeout(_st);
+                _st = setTimeout(() => onSearch(q), 40);
+            }
+            function onSearch(q) {
+                const status = document.getElementById('searchStatus');
+                const list = document.getElementById('searchList');
+                if (!routeIndex) {
+                    status.textContent = 'Index not loaded yet.';
+                    return;
+                }
+                const needle = q.trim();
+                if (!needle || needle.length < 2) {
+                    list.innerHTML = '';
+                    setIndexStatus();
+                    return;
+                }
+                const results = searchRoutes(needle);
+                if (!results.length) {
+                    list.innerHTML = '<div style="color:var(--muted);padding:8px 0;font-size:0.82rem">No matches.</div>';
+                    status.textContent = '';
+                    return;
+                }
+                status.textContent = results.length + ' result' + (results.length !== 1 ? 's' : '');
+                list.innerHTML = results
+                    .map(
+                        (r) => `<div class="sr-item">
+      <div class="sr-info">
+        <div class="sr-name">${highlight(r.n, needle)}</div>
+        <div class="sr-meta">${r.u ? esc(r.u) + ' · ' : ''}<code>${esc(r.e)}</code></div>
+        ${
+            r.c && r.c.length
+                ? `<div class="sr-cats">${r.c
+                      .slice(0, 5)
+                      .map((c) => `<span class="cat">${esc(c)}</span>`)
+                      .join('')}</div>`
+                : ''
+        }
+      </div>
+      <button class="btn-p btn-sm" onclick="quickAdd('${esc(r.e)}','${esc(r.n)}',this)">[+ Add]</button>
+    </div>`
+                    )
+                    .join('');
+            }
             async function quickAdd(path, label, btn) {
                 btn.disabled = true;
                 const ok = await addFeedFrom(path, label);
                 if (ok) {
-                    btn.textContent = '✓ Added';
+                    btn.textContent = '[✓ Added]';
                     setTimeout(() => {
-                        btn.textContent = '+ Add';
+                        btn.textContent = '[+ Add]';
                         btn.disabled = false;
                     }, 2000);
-                } else {
-                    btn.disabled = false;
-                }
+                } else btn.disabled = false;
             }
 
             /* ── Utils ── */
             function esc(s) {
                 return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
             }
-
-            let toastTimer;
+            let _tt;
             function toast(msg) {
                 const el = document.getElementById('toast');
                 el.textContent = msg;
                 el.classList.add('show');
-                clearTimeout(toastTimer);
-                toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+                clearTimeout(_tt);
+                _tt = setTimeout(() => el.classList.remove('show'), 2500);
+            }
+            function refreshAll() {
+                loadStats();
+                loadFeeds(true);
+                if (!routeIndex) loadIndex();
             }
 
             /* ── Init ── */
             const saved = getKey();
             if (saved) document.getElementById('keyInput').value = saved;
             updateKeyStatus();
+            loadSettings();
             loadFeeds();
+            loadStats();
             loadIndex();
         </script>
     </body>
