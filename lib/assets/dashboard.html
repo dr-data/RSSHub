@@ -1,173 +1,409 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RSSHub Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0f1117; --surface: #1a1d27; --border: #2d3148;
-    --text: #e2e4f0; --muted: #7a7f9a; --accent: #f6821f;
-    --danger: #e05252; --success: #4caf82; --radius: 8px;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px; }
-  h1 { font-size: 1.4rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-  h1 span { color: var(--accent); }
-  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 12px; }
-  .instance-url { font-size: 0.8rem; color: var(--muted); background: var(--surface); border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-  .card h2 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
-  .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-  input[type="text"], input[type="password"] {
-    flex: 1; min-width: 160px; background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 9px 12px; border-radius: var(--radius); font-size: 0.875rem; outline: none;
-  }
-  input:focus { border-color: var(--accent); }
-  input::placeholder { color: var(--muted); }
-  button { padding: 9px 16px; border-radius: var(--radius); border: none; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: opacity 0.15s; }
-  button:hover { opacity: 0.85; }
-  button:disabled { opacity: 0.4; cursor: default; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-  .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 6px 10px; font-size: 0.8rem; }
-  .btn-copy { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 6px 10px; font-size: 0.8rem; }
-  .btn-copy.copied { color: var(--success); border-color: var(--success); }
-  .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>RSSHub Dashboard</title>
+        <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+        <style>
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            :root {
+                --bg: #0f1117;
+                --surface: #1a1d27;
+                --border: #2d3148;
+                --text: #e2e4f0;
+                --muted: #7a7f9a;
+                --accent: #f6821f;
+                --danger: #e05252;
+                --success: #4caf82;
+                --radius: 8px;
+                --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            }
+            body {
+                font-family: var(--font);
+                background: var(--bg);
+                color: var(--text);
+                min-height: 100vh;
+                padding: 24px;
+            }
+            h1 {
+                font-size: 1.4rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            h1 span {
+                color: var(--accent);
+            }
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 32px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .instance-url {
+                font-size: 0.8rem;
+                color: var(--muted);
+                background: var(--surface);
+                border: 1px solid var(--border);
+                padding: 4px 10px;
+                border-radius: 20px;
+            }
+            .card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            .card h2 {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 16px;
+            }
+            .form-row {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            input[type='text'],
+            input[type='password'] {
+                flex: 1;
+                min-width: 160px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 9px 12px;
+                border-radius: var(--radius);
+                font-size: 0.875rem;
+                outline: none;
+            }
+            input:focus {
+                border-color: var(--accent);
+            }
+            input::placeholder {
+                color: var(--muted);
+            }
+            button {
+                padding: 9px 16px;
+                border-radius: var(--radius);
+                border: none;
+                cursor: pointer;
+                font-size: 0.875rem;
+                font-weight: 500;
+                transition: opacity 0.15s;
+            }
+            button:hover {
+                opacity: 0.85;
+            }
+            button:disabled {
+                opacity: 0.4;
+                cursor: default;
+            }
+            .btn-primary {
+                background: var(--accent);
+                color: #fff;
+            }
+            .btn-ghost {
+                background: transparent;
+                color: var(--muted);
+                border: 1px solid var(--border);
+            }
+            .btn-danger {
+                background: transparent;
+                color: var(--danger);
+                border: 1px solid var(--danger);
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            .btn-copy {
+                background: transparent;
+                color: var(--muted);
+                border: 1px solid var(--border);
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            .btn-copy.copied {
+                color: var(--success);
+                border-color: var(--success);
+            }
+            .btn-sm {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
 
-  .feed-list, .search-list { display: flex; flex-direction: column; gap: 8px; }
-  .feed-item, .search-item {
-    display: flex; align-items: center; gap: 12px; background: var(--bg);
-    border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px;
-  }
-  .feed-info, .search-info { flex: 1; min-width: 0; }
-  .feed-label, .search-name { font-weight: 500; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .feed-path { font-size: 0.78rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .search-meta { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
-  .search-meta code { background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 4px; font-size: 0.76rem; }
-  .search-cats { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
-  .cat { font-size: 0.72rem; padding: 2px 7px; border-radius: 12px; background: rgba(246,130,31,0.12); color: var(--accent); border: 1px solid rgba(246,130,31,0.25); }
-  .feed-actions { display: flex; gap: 6px; flex-shrink: 0; }
+            .feed-list,
+            .search-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .feed-item,
+            .search-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: var(--bg);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 12px 14px;
+            }
+            .feed-info,
+            .search-info {
+                flex: 1;
+                min-width: 0;
+            }
+            .feed-label,
+            .search-name {
+                font-weight: 500;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .feed-path {
+                font-size: 0.78rem;
+                color: var(--muted);
+                margin-top: 2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .search-meta {
+                font-size: 0.78rem;
+                color: var(--muted);
+                margin-top: 3px;
+            }
+            .search-meta code {
+                background: rgba(255, 255, 255, 0.06);
+                padding: 1px 5px;
+                border-radius: 4px;
+                font-size: 0.76rem;
+            }
+            .search-cats {
+                margin-top: 5px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .cat {
+                font-size: 0.72rem;
+                padding: 2px 7px;
+                border-radius: 12px;
+                background: rgba(246, 130, 31, 0.12);
+                color: var(--accent);
+                border: 1px solid rgba(246, 130, 31, 0.25);
+            }
+            .feed-actions {
+                display: flex;
+                gap: 6px;
+                flex-shrink: 0;
+            }
 
-  .key-row { display: flex; align-items: center; gap: 10px; }
-  .key-status { font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; flex-shrink: 0; }
-  .key-status.set { background: rgba(76,175,130,0.15); color: var(--success); }
-  .key-status.unset { background: rgba(122,127,154,0.15); color: var(--muted); }
+            .key-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .key-status {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+                border-radius: 20px;
+                flex-shrink: 0;
+            }
+            .key-status.set {
+                background: rgba(76, 175, 130, 0.15);
+                color: var(--success);
+            }
+            .key-status.unset {
+                background: rgba(122, 127, 154, 0.15);
+                color: var(--muted);
+            }
 
-  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .count { font-size: 0.8rem; color: var(--muted); background: var(--bg); border: 1px solid var(--border); padding: 2px 8px; border-radius: 12px; }
-  .empty { text-align: center; color: var(--muted); padding: 24px; font-size: 0.9rem; }
-  .hint { font-size: 0.78rem; color: var(--muted); margin-top: 10px; }
-  .search-status { font-size: 0.78rem; color: var(--muted); margin-top: 8px; min-height: 18px; }
+            .section-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+            }
+            .count {
+                font-size: 0.8rem;
+                color: var(--muted);
+                background: var(--bg);
+                border: 1px solid var(--border);
+                padding: 2px 8px;
+                border-radius: 12px;
+            }
+            .empty {
+                text-align: center;
+                color: var(--muted);
+                padding: 24px;
+                font-size: 0.9rem;
+            }
+            .hint {
+                font-size: 0.78rem;
+                color: var(--muted);
+                margin-top: 10px;
+            }
+            .search-status {
+                font-size: 0.78rem;
+                color: var(--muted);
+                margin-top: 8px;
+                min-height: 18px;
+            }
 
-  mark { background: rgba(246,130,31,0.25); color: var(--accent); border-radius: 2px; padding: 0 1px; font-style: normal; }
+            mark {
+                background: rgba(246, 130, 31, 0.25);
+                color: var(--accent);
+                border-radius: 2px;
+                padding: 0 1px;
+                font-style: normal;
+            }
 
-  .toast { position: fixed; bottom: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; font-size: 0.85rem; opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; z-index: 100; }
-  .toast.show { opacity: 1; transform: translateY(0); }
-</style>
-</head>
-<body>
-<header>
-  <h1>RSS<span>Hub</span> Dashboard</h1>
-  <div class="instance-url" id="instanceUrl"></div>
-</header>
+            .toast {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 10px 16px;
+                font-size: 0.85rem;
+                opacity: 0;
+                transform: translateY(8px);
+                transition: all 0.2s;
+                pointer-events: none;
+                z-index: 100;
+            }
+            .toast.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>RSS<span>Hub</span> Dashboard</h1>
+            <div class="instance-url" id="instanceUrl"></div>
+        </header>
 
-<div class="card">
-  <h2>Access Key</h2>
-  <div class="key-row">
-    <input type="password" id="keyInput" placeholder="Paste your ACCESS_KEY (leave empty if none set)" style="flex:1">
-    <button class="btn-primary" onclick="saveKey()">Save</button>
-    <button class="btn-ghost" onclick="clearKey()">Clear</button>
-    <span class="key-status" id="keyStatus">unset</span>
-  </div>
-</div>
+        <div class="card">
+            <h2>Access Key</h2>
+            <div class="key-row">
+                <input type="password" id="keyInput" placeholder="Paste your ACCESS_KEY (leave empty if none set)" style="flex: 1" />
+                <button class="btn-primary" onclick="saveKey()">Save</button>
+                <button class="btn-ghost" onclick="clearKey()">Clear</button>
+                <span class="key-status" id="keyStatus">unset</span>
+            </div>
+        </div>
 
-<div class="card">
-  <div class="section-header">
-    <h2>My Feeds <span class="count" id="feedCount">0</span></h2>
-  </div>
-  <div class="feed-list" id="feedList"><div class="empty">Loading…</div></div>
-</div>
+        <div class="card">
+            <div class="section-header">
+                <h2>My Feeds <span class="count" id="feedCount">0</span></h2>
+            </div>
+            <div class="feed-list" id="feedList"><div class="empty">Loading…</div></div>
+        </div>
 
-<div class="card">
-  <h2>Watch Any URL</h2>
-  <div class="form-row">
-    <input type="text" id="watchUrlInput" placeholder="https://example.com/products" style="flex:3">
-    <input type="text" id="watchLabelInput" placeholder="Label (optional)" style="flex:1">
-    <button class="btn-primary" onclick="watchUrl()">Watch</button>
-  </div>
-  <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:0.85rem;cursor:pointer;user-select:none">
-    <input type="checkbox" id="watchJsMode" style="width:15px;height:15px;accent-color:var(--accent)">
-    <span>JS rendering <span style="color:var(--muted)">(via Jina AI — for React/Angular/SPA sites)</span></span>
-  </label>
-  <div class="hint">Detects content changes on any public URL. JS mode renders JavaScript before capturing — slower but works on dynamic sites. Paste the feed URL into any RSS reader.</div>
-</div>
+        <div class="card">
+            <h2>Watch Any URL</h2>
+            <div class="form-row">
+                <input type="text" id="watchUrlInput" placeholder="https://example.com/products" style="flex: 3" />
+                <input type="text" id="watchLabelInput" placeholder="Label (optional)" style="flex: 1" />
+                <button class="btn-primary" onclick="watchUrl()">Watch</button>
+            </div>
+            <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; cursor: pointer; user-select: none">
+                <input type="checkbox" id="watchJsMode" style="width: 15px; height: 15px; accent-color: var(--accent)" />
+                <span>JS rendering <span style="color: var(--muted)">(via Jina AI — for React/Angular/SPA sites)</span></span>
+            </label>
+            <div class="hint">Detects content changes on any public URL. JS mode renders JavaScript before capturing — slower but works on dynamic sites. Paste the feed URL into any RSS reader.</div>
+        </div>
 
-<div class="card">
-  <h2>Discover</h2>
-  <input type="text" id="searchInput" placeholder="Search 1000+ feeds — try: github, podcast, youtube, hn, reddit…" style="width:100%" oninput="onSearch(this.value)" autocomplete="off" spellcheck="false">
-  <div class="search-status" id="searchStatus"></div>
-  <div class="search-list" id="searchList"></div>
-  <div class="hint">Powered by fuzzy search — typos OK. Click <strong>+ Add</strong> to save instantly.</div>
-</div>
+        <div class="card">
+            <h2>Discover</h2>
+            <input type="text" id="searchInput" placeholder="Search 1000+ feeds — try: github, podcast, youtube, hn, reddit…" style="width: 100%" oninput="onSearch(this.value)" autocomplete="off" spellcheck="false" />
+            <div class="search-status" id="searchStatus"></div>
+            <div class="search-list" id="searchList"></div>
+            <div class="hint">Powered by fuzzy search — typos OK. Click <strong>+ Add</strong> to save instantly.</div>
+        </div>
 
-<div class="card">
-  <h2>Add Manually</h2>
-  <div class="form-row">
-    <input type="text" id="pathInput" placeholder="/hackernews/best" style="flex:2">
-    <input type="text" id="labelInput" placeholder="Label (optional)" style="flex:1">
-    <button class="btn-primary" onclick="addFeed()">Add</button>
-  </div>
-  <div class="hint">Examples: <code>/hackernews/best</code> &nbsp;·&nbsp; <code>/github/trending/javascript</code> &nbsp;·&nbsp; <code>/youtube/user/username</code></div>
-</div>
+        <div class="card">
+            <h2>Add Manually</h2>
+            <div class="form-row">
+                <input type="text" id="pathInput" placeholder="/hackernews/best" style="flex: 2" />
+                <input type="text" id="labelInput" placeholder="Label (optional)" style="flex: 1" />
+                <button class="btn-primary" onclick="addFeed()">Add</button>
+            </div>
+            <div class="hint">Examples: <code>/hackernews/best</code> &nbsp;·&nbsp; <code>/github/trending/javascript</code> &nbsp;·&nbsp; <code>/youtube/user/username</code></div>
+        </div>
 
-<div class="toast" id="toast"></div>
+        <div class="toast" id="toast"></div>
 
-<script>
-  const origin = location.origin;
-  document.getElementById('instanceUrl').textContent = origin;
+        <script>
+            const origin = location.origin;
+            document.getElementById('instanceUrl').textContent = origin;
 
-  /* ── Auth ── */
-  function getKey() { return localStorage.getItem('rsshub_key') || ''; }
-  function saveKey() {
-    const k = document.getElementById('keyInput').value.trim();
-    localStorage.setItem('rsshub_key', k);
-    updateKeyStatus();
-    toast(k ? 'Access key saved' : 'Key cleared');
-    loadFeeds();
-    loadIndex();
-  }
-  function clearKey() {
-    localStorage.removeItem('rsshub_key');
-    document.getElementById('keyInput').value = '';
-    updateKeyStatus();
-    loadFeeds();
-  }
-  function updateKeyStatus() {
-    const el = document.getElementById('keyStatus');
-    const k = getKey();
-    el.textContent = k ? 'set' : 'no key';
-    el.className = 'key-status ' + (k ? 'set' : 'unset');
-  }
-  function apiUrl(path) {
-    const k = getKey();
-    const sep = path.includes('?') ? '&' : '?';
-    return k ? `${path}${sep}key=${encodeURIComponent(k)}` : path;
-  }
+            /* ── Auth ── */
+            function getKey() {
+                return localStorage.getItem('rsshub_key') || '';
+            }
+            function saveKey() {
+                const k = document.getElementById('keyInput').value.trim();
+                localStorage.setItem('rsshub_key', k);
+                updateKeyStatus();
+                toast(k ? 'Access key saved' : 'Key cleared');
+                loadFeeds();
+                loadIndex();
+            }
+            function clearKey() {
+                localStorage.removeItem('rsshub_key');
+                document.getElementById('keyInput').value = '';
+                updateKeyStatus();
+                loadFeeds();
+            }
+            function updateKeyStatus() {
+                const el = document.getElementById('keyStatus');
+                const k = getKey();
+                el.textContent = k ? 'set' : 'no key';
+                el.className = 'key-status ' + (k ? 'set' : 'unset');
+            }
+            function apiUrl(path) {
+                const k = getKey();
+                const sep = path.includes('?') ? '&' : '?';
+                return k ? `${path}${sep}key=${encodeURIComponent(k)}` : path;
+            }
 
-  /* ── My Feeds ── */
-  async function loadFeeds() {
-    const list = document.getElementById('feedList');
-    const count = document.getElementById('feedCount');
-    try {
-      const res = await fetch(apiUrl('/api/feeds'));
-      if (res.status === 401) { list.innerHTML = '<div class="empty">Unauthorized — set your access key above.</div>'; count.textContent = '0'; return; }
-      const feeds = await res.json();
-      count.textContent = feeds.length;
-      if (!feeds.length) { list.innerHTML = '<div class="empty">No feeds yet. Use Discover or Add Manually below.</div>'; return; }
-      list.innerHTML = feeds.map(f => `
+            /* ── My Feeds ── */
+            async function loadFeeds() {
+                const list = document.getElementById('feedList');
+                const count = document.getElementById('feedCount');
+                try {
+                    const res = await fetch(apiUrl('/api/feeds'));
+                    if (res.status === 401) {
+                        list.innerHTML = '<div class="empty">Unauthorized — set your access key above.</div>';
+                        count.textContent = '0';
+                        return;
+                    }
+                    const feeds = await res.json();
+                    count.textContent = feeds.length;
+                    if (!feeds.length) {
+                        list.innerHTML = '<div class="empty">No feeds yet. Use Discover or Add Manually below.</div>';
+                        return;
+                    }
+                    list.innerHTML = feeds
+                        .map(
+                            (f) => `
         <div class="feed-item" id="fi-${esc(f.id)}">
           <div class="feed-info">
             <div class="feed-label">${esc(f.label)}</div>
@@ -177,144 +413,196 @@
             <button class="btn-copy" onclick="copyFeed('${esc(f.path)}',this)">Copy URL</button>
             <button class="btn-danger" onclick="deleteFeed('${esc(f.id)}')">Remove</button>
           </div>
-        </div>`).join('');
-    } catch { list.innerHTML = '<div class="empty">Failed to load feeds.</div>'; }
-  }
+        </div>`
+                        )
+                        .join('');
+                } catch {
+                    list.innerHTML = '<div class="empty">Failed to load feeds.</div>';
+                }
+            }
 
-  async function deleteFeed(id) {
-    const res = await fetch(apiUrl(`/api/feeds/${id}`), { method: 'DELETE' });
-    if (res.ok) { toast('Removed'); loadFeeds(); } else { toast('Failed to remove'); }
-  }
+            async function deleteFeed(id) {
+                const res = await fetch(apiUrl(`/api/feeds/${id}`), { method: 'DELETE' });
+                if (res.ok) {
+                    toast('Removed');
+                    loadFeeds();
+                } else {
+                    toast('Failed to remove');
+                }
+            }
 
-  function copyFeed(path, btn) {
-    navigator.clipboard.writeText(origin + path).then(() => {
-      btn.textContent = 'Copied!'; btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copy URL'; btn.classList.remove('copied'); }, 2000);
-    });
-  }
+            function copyFeed(path, btn) {
+                navigator.clipboard.writeText(origin + path).then(() => {
+                    btn.textContent = 'Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = 'Copy URL';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            }
 
-  /* ── Manual Add ── */
-  async function addFeedFrom(path, label) {
-    if (!path.startsWith('/')) { toast('Path must start with /'); return; }
-    const res = await fetch(apiUrl('/api/feeds'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path, label }),
-    });
-    if (res.ok) {
-      toast('Added: ' + (label || path));
-      loadFeeds();
-      return true;
-    }
-    const err = await res.json().catch(() => ({}));
-    toast(err.error || 'Failed to add feed');
-    return false;
-  }
+            /* ── Manual Add ── */
+            async function addFeedFrom(path, label) {
+                if (!path.startsWith('/')) {
+                    toast('Path must start with /');
+                    return;
+                }
+                const res = await fetch(apiUrl('/api/feeds'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path, label }),
+                });
+                if (res.ok) {
+                    toast('Added: ' + (label || path));
+                    loadFeeds();
+                    return true;
+                }
+                const err = await res.json().catch(() => ({}));
+                toast(err.error || 'Failed to add feed');
+                return false;
+            }
 
-  async function addFeed() {
-    const path = document.getElementById('pathInput').value.trim();
-    const label = document.getElementById('labelInput').value.trim();
-    if (await addFeedFrom(path, label)) {
-      document.getElementById('pathInput').value = '';
-      document.getElementById('labelInput').value = '';
-    }
-  }
+            async function addFeed() {
+                const path = document.getElementById('pathInput').value.trim();
+                const label = document.getElementById('labelInput').value.trim();
+                if (await addFeedFrom(path, label)) {
+                    document.getElementById('pathInput').value = '';
+                    document.getElementById('labelInput').value = '';
+                }
+            }
 
-  /* ── Watch URL ── */
-  async function watchUrl() {
-    const url = document.getElementById('watchUrlInput').value.trim();
-    const label = document.getElementById('watchLabelInput').value.trim();
-    const jsMode = document.getElementById('watchJsMode').checked;
-    if (!url || !url.startsWith('http')) { toast('Enter a valid http/https URL'); return; }
-    let path = '/watch?url=' + encodeURIComponent(url);
-    if (label) path += '&label=' + encodeURIComponent(label);
-    if (jsMode) path += '&js=true';
-    const displayLabel = (label || 'Watch: ' + new URL(url).hostname) + (jsMode ? ' (JS)' : '');
-    if (await addFeedFrom(path, displayLabel)) {
-      document.getElementById('watchUrlInput').value = '';
-      document.getElementById('watchLabelInput').value = '';
-      document.getElementById('watchJsMode').checked = false;
-    }
-  }
+            /* ── Watch URL ── */
+            async function watchUrl() {
+                const url = document.getElementById('watchUrlInput').value.trim();
+                const label = document.getElementById('watchLabelInput').value.trim();
+                const jsMode = document.getElementById('watchJsMode').checked;
+                if (!url || !url.startsWith('http')) {
+                    toast('Enter a valid http/https URL');
+                    return;
+                }
+                let path = '/watch?url=' + encodeURIComponent(url);
+                if (label) path += '&label=' + encodeURIComponent(label);
+                if (jsMode) path += '&js=true';
+                const displayLabel = (label || 'Watch: ' + new URL(url).hostname) + (jsMode ? ' (JS)' : '');
+                if (await addFeedFrom(path, displayLabel)) {
+                    document.getElementById('watchUrlInput').value = '';
+                    document.getElementById('watchLabelInput').value = '';
+                    document.getElementById('watchJsMode').checked = false;
+                }
+            }
 
-  /* ── Fuzzy Search (client-side via fuse.js) ── */
-  let fuse = null;
-  let indexSize = 0;
+            /* ── Fuzzy Search (client-side via fuse.js) ── */
+            let fuse = null;
+            let indexSize = 0;
 
-  async function loadIndex() {
-    const status = document.getElementById('searchStatus');
-    status.textContent = 'Loading route index…';
-    try {
-      const res = await fetch(apiUrl('/api/routes/index'));
-      if (!res.ok) { status.textContent = res.status === 401 ? 'Unauthorized — set access key.' : 'Failed to load index.'; return; }
-      const data = await res.json();
-      indexSize = data.length;
-      fuse = new Fuse(data, {
-        keys: [
-          { name: 'n', weight: 3 },   // name — highest priority
-          { name: 'u', weight: 2 },   // website url
-          { name: 'c', weight: 1 },   // categories
-        ],
-        threshold: 0.4,          // 0 = exact, 1 = anything; 0.4 = reasonable typo tolerance
-        includeScore: true,
-        minMatchCharLength: 2,
-        ignoreLocation: true,    // don't penalise matches far from the start
-        useExtendedSearch: false,
-      });
-      status.textContent = `${indexSize.toLocaleString()} routes ready — start typing to search`;
-    } catch { status.textContent = 'Could not load search index.'; }
-  }
+            async function loadIndex() {
+                const status = document.getElementById('searchStatus');
+                status.textContent = 'Loading route index…';
+                try {
+                    const res = await fetch(apiUrl('/api/routes/index'));
+                    if (!res.ok) {
+                        status.textContent = res.status === 401 ? 'Unauthorized — set access key.' : 'Failed to load index.';
+                        return;
+                    }
+                    const data = await res.json();
+                    indexSize = data.length;
+                    fuse = new Fuse(data, {
+                        keys: [
+                            { name: 'n', weight: 3 }, // name — highest priority
+                            { name: 'u', weight: 2 }, // website url
+                            { name: 'c', weight: 1 }, // categories
+                        ],
+                        threshold: 0.4, // 0 = exact, 1 = anything; 0.4 = reasonable typo tolerance
+                        includeScore: true,
+                        minMatchCharLength: 2,
+                        ignoreLocation: true, // don't penalise matches far from the start
+                        useExtendedSearch: false,
+                    });
+                    status.textContent = `${indexSize.toLocaleString()} routes ready — start typing to search`;
+                } catch {
+                    status.textContent = 'Could not load search index.';
+                }
+            }
 
-  function onSearch(q) {
-    const status = document.getElementById('searchStatus');
-    const list = document.getElementById('searchList');
-    if (!fuse) { status.textContent = 'Index not loaded yet.'; return; }
-    if (!q.trim() || q.trim().length < 2) { list.innerHTML = ''; status.textContent = `${indexSize.toLocaleString()} routes ready — start typing to search`; return; }
+            function onSearch(q) {
+                const status = document.getElementById('searchStatus');
+                const list = document.getElementById('searchList');
+                if (!fuse) {
+                    status.textContent = 'Index not loaded yet.';
+                    return;
+                }
+                if (!q.trim() || q.trim().length < 2) {
+                    list.innerHTML = '';
+                    status.textContent = `${indexSize.toLocaleString()} routes ready — start typing to search`;
+                    return;
+                }
 
-    const results = fuse.search(q.trim(), { limit: 10 });
+                const results = fuse.search(q.trim(), { limit: 10 });
 
-    if (!results.length) { list.innerHTML = '<div class="empty">No matches. Try a shorter or different term.</div>'; status.textContent = ''; return; }
+                if (!results.length) {
+                    list.innerHTML = '<div class="empty">No matches. Try a shorter or different term.</div>';
+                    status.textContent = '';
+                    return;
+                }
 
-    status.textContent = `${results.length} result${results.length !== 1 ? 's' : ''}`;
-    list.innerHTML = results.map(({ item: r }) => `
+                status.textContent = `${results.length} result${results.length !== 1 ? 's' : ''}`;
+                list.innerHTML = results
+                    .map(
+                        ({ item: r }) => `
       <div class="search-item">
         <div class="search-info">
           <div class="search-name">${esc(r.n)}</div>
           <div class="search-meta">${r.u ? esc(r.u) + ' &nbsp;·&nbsp; ' : ''}<code>${esc(r.e)}</code></div>
-          ${r.c && r.c.length ? `<div class="search-cats">${r.c.slice(0,4).map(c => `<span class="cat">${esc(c)}</span>`).join('')}</div>` : ''}
+          ${
+              r.c && r.c.length
+                  ? `<div class="search-cats">${r.c
+                        .slice(0, 4)
+                        .map((c) => `<span class="cat">${esc(c)}</span>`)
+                        .join('')}</div>`
+                  : ''
+          }
         </div>
         <button class="btn-primary btn-sm" onclick="quickAdd('${esc(r.e)}','${esc(r.n)}',this)">+ Add</button>
-      </div>`).join('');
-  }
+      </div>`
+                    )
+                    .join('');
+            }
 
-  async function quickAdd(path, label, btn) {
-    btn.disabled = true;
-    const ok = await addFeedFrom(path, label);
-    if (ok) {
-      btn.textContent = '✓ Added';
-      setTimeout(() => { btn.textContent = '+ Add'; btn.disabled = false; }, 2000);
-    } else {
-      btn.disabled = false;
-    }
-  }
+            async function quickAdd(path, label, btn) {
+                btn.disabled = true;
+                const ok = await addFeedFrom(path, label);
+                if (ok) {
+                    btn.textContent = '✓ Added';
+                    setTimeout(() => {
+                        btn.textContent = '+ Add';
+                        btn.disabled = false;
+                    }, 2000);
+                } else {
+                    btn.disabled = false;
+                }
+            }
 
-  /* ── Utils ── */
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+            /* ── Utils ── */
+            function esc(s) {
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
 
-  let toastTimer;
-  function toast(msg) {
-    const el = document.getElementById('toast');
-    el.textContent = msg; el.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
-  }
+            let toastTimer;
+            function toast(msg) {
+                const el = document.getElementById('toast');
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+            }
 
-  /* ── Init ── */
-  const saved = getKey();
-  if (saved) document.getElementById('keyInput').value = saved;
-  updateKeyStatus();
-  loadFeeds();
-  loadIndex();
-</script>
-</body>
+            /* ── Init ── */
+            const saved = getKey();
+            if (saved) document.getElementById('keyInput').value = saved;
+            updateKeyStatus();
+            loadFeeds();
+            loadIndex();
+        </script>
+    </body>
 </html>

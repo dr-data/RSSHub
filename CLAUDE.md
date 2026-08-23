@@ -40,6 +40,7 @@ The Worker build uses `tsdown-worker.config.ts` which bundles everything into `d
 ### Route registry
 
 Routes live under `lib/routes/{namespace}/`. The registry (`lib/registry.ts`) auto-discovers them:
+
 - In dev/test: `directoryImport` scans `lib/routes/**` at startup
 - In production/Worker: loads pre-built `assets/build/routes.js` (or `routes-worker.js`)
 
@@ -55,10 +56,11 @@ Before deploying the Worker, `pnpm build:routes:worker` must run to regenerate `
 4. Middleware in `lib/app-bootstrap.tsx` / `lib/app.worker.tsx` automatically renders the returned `Data` as RSS/Atom/JSON via `lib/views/rss.tsx` and `lib/views/atom.tsx`
 
 Minimal handler pattern:
+
 ```typescript
 import type { Route, Data } from '@/types';
-import got from '@/utils/got';         // HTTP client (axios-compatible)
-import { load } from 'cheerio';        // HTML parsing (not available in Worker)
+import got from '@/utils/got'; // HTTP client (axios-compatible)
+import { load } from 'cheerio'; // HTML parsing (not available in Worker)
 
 export const route: Route = {
     path: '/:param?',
@@ -79,14 +81,15 @@ async function handler(ctx): Promise<Data> {
 Routes that need direct KV access or bypass the registry are registered manually in `lib/app.worker.tsx`:
 
 ```typescript
-app.route('/api/feeds', feedsAdmin);      // personal feed list CRUD (KV-backed)
+app.route('/api/feeds', feedsAdmin); // personal feed list CRUD (KV-backed)
 app.route('/api/routes/index', routesSearch); // compact route list for dashboard
-app.route('/watch', watchRoute);          // URL change monitor → RSS
+app.route('/watch', watchRoute); // URL change monitor → RSS
 ```
 
 These use `new Hono<{ Bindings: Bindings }>()` with:
+
 ```typescript
-type Bindings = { CACHE?: KVNamespace; ACCESS_KEY?: string; BROWSER?: any; }
+type Bindings = { CACHE?: KVNamespace; ACCESS_KEY?: string; BROWSER?: any };
 ```
 
 `c.env.CACHE` is the KV namespace. `c.env.ACCESS_KEY` is the auth secret set via `wrangler secret put`.
@@ -100,6 +103,7 @@ type Bindings = { CACHE?: KVNamespace; ACCESS_KEY?: string; BROWSER?: any; }
 ### Dashboard
 
 A static single-page admin UI at `/dashboard.html` (`lib/assets/dashboard.html`). It:
+
 - Manages a personal feed list stored in `CACHE` KV under key `admin:feeds`
 - Loads the full route index once from `/api/routes/index` and searches it client-side with fuse.js
 - Provides a "Watch Any URL" form that creates `/watch?url=…` feeds (with optional `&js=true` for Jina AI JS rendering)
